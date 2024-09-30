@@ -1,0 +1,23 @@
+orgs:
+  complytime:
+    description: 
+    default_repository_permission: read
+    has_organization_projects: true
+    has_repository_projects: true
+    members_can_create_repositories: true
+    admins:
+      - jpower432
+    members:
+      - beatrizmcouto
+      - d10n
+      - gvauter
+      - hbraswelrh
+      - huiwangredhat
+      - jflowers
+    repos:
+      ".github":
+        default_branch: main
+        description: demo
+        has_projects: true
+    docs:
+        description: Documentation
