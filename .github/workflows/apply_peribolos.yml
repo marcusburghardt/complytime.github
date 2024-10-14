@@ -18,8 +18,7 @@ jobs:
         uses: actions/checkout@v4
         
       - name: Copy peribolos.yaml
-        run: |
-               cp peribolos.yaml  /tmp
+        run: cp peribolos.yaml  /tmp
       
       - name: Checkout ghproxy and peribolos code
         if: ${{ github.repository_owner == 'complytime' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
@@ -59,7 +58,7 @@ jobs:
           /tmp/ghproxy --legacy-disable-disk-cache-partitions-by-auth-header=false --get-throttling-time-ms=300 --throttling-time-ms=900 --throttling-time-v4-ms=850 --throttling-max-delay-duration-seconds=45 --throttling-max-delay-duration-v4-seconds=110 --request-timeout=120 1>/dev/null 2>&1 &
           pid=$!
           jobs
-          /tmp/peribolos -config-path /tmp/peribolos.yaml  --fix-org --fix-org-members --fix-repos -min-admins 2 --github-token-path /tmp/org-token --github-endpoint  --confirm 2>&1 | jq -r '[.severity, .time, .msg] | join(" | ")'
+          /tmp/peribolos -config-path /tmp/peribolos.yaml  --fix-org --fix-org-members --fix-repos -min-admins 2 --github-token-path /tmp/org-token  2>&1 | jq -r '[.severity, .time, .msg] | join(" | ")'
           kill $pid
           rm auth.txt
       
