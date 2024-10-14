@@ -1,1 +1,1 @@
-This repository will apply peribolos to manage org complytime.
+This repository will apply peribolos to manage orgnization complytime.
