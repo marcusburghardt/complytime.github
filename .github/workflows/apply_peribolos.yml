@@ -41,24 +41,15 @@ jobs:
           go mod tidy
           go build -o  .
           cp peribolos /tmp
-      
-      - name: Generate a app token
-        id: generate-token
-        uses: actions/create-github-app-token@v1
-        with:
-          app-id: ${{ vars.APP_ID }}
-          private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
       - name: Apply peribolos.yaml
-        env:
-          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
         if: ${{ github.repository_owner == 'complytime' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         run: |
-          echo $GITHUB_TOKEN > auth.txt
+          echo ${{ secrets.APP_ACCESS_TOKEN }} > auth.txt
           /tmp/ghproxy --legacy-disable-disk-cache-partitions-by-auth-header=false --get-throttling-time-ms=300 --throttling-time-ms=900 --throttling-time-v4-ms=850 --throttling-max-delay-duration-seconds=45 --throttling-max-delay-duration-v4-seconds=110 --request-timeout=120 1>/dev/null 2>&1 &
           pid=$!
           jobs
-          /tmp/peribolos -config-path /tmp/peribolos.yaml  --fix-org --fix-org-members --fix-repos -min-admins 2 --github-token-path /tmp/org-token  2>&1 | jq -r '[.severity, .time, .msg] | join(" | ")'
+          /tmp/peribolos -config-path /tmp/peribolos.yaml  --fix-org --fix-org-members --fix-repos -min-admins 2 --github-token-path auth.txt  2>&1 | jq -r '[.severity, .time, .msg] | join(" | ")'
           kill $pid
           rm auth.txt
       
