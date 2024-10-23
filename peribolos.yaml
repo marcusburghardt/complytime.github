@@ -14,6 +14,10 @@ orgs:
       - d10n
       - gvauter
       - hbraswelrh
+      - marcusburghardt
+      - qduanmu
+      - RichardXuan
+      - vojtapolasek
     repos:
       ".github":
         default_branch: main
