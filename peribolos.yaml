@@ -29,3 +29,35 @@ orgs:
         has_projects: true
     docs:
         description: Documentation
+    teams:
+      complytime-approvers:
+        description: This would be a CODEOWNER group for cmd complytime
+        members:
+        - d10n
+        - gvauter
+        - hbraswelrh
+        - huiwangredhat
+        - jpower432
+        - qduanmu
+        repos:
+          complytime: write
+      openscap-plugin-approvers:
+        description: This would be a CODEOWNER group for cmd openscap-plugin
+        members:
+        - marcusburghardt
+        - vojtapolasek
+        repos:
+          complytime: write
+      complytime-dev:
+        description: people working on complytime repo
+        members:
+        - d10n
+        - gvauter
+        - hbraswelrh
+        - huiwangredhat
+        - marcusburghardt
+        - jpower432
+        - qduanmu
+        - vojtapolasek
+        repos:
+          complytime: write
