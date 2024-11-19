@@ -32,6 +32,7 @@ orgs:
     teams:
       complytime-approvers:
         description: This would be a CODEOWNER group for cmd complytime
+        privacy: closed
         members:
         - d10n
         - gvauter
@@ -43,6 +44,7 @@ orgs:
           complytime: write
       openscap-plugin-approvers:
         description: This would be a CODEOWNER group for cmd openscap-plugin
+        privacy: closed
         members:
         - marcusburghardt
         - vojtapolasek
@@ -50,6 +52,7 @@ orgs:
           complytime: write
       complytime-dev:
         description: people working on complytime repo
+        privacy: closed
         members:
         - d10n
         - gvauter
