@@ -65,3 +65,4 @@ orgs:
         - vojtapolasek
         repos:
           complytime: write
+          compliance-to-policy-go: write
