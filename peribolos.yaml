@@ -47,6 +47,7 @@ orgs:
         description: This would be a CODEOWNER group for cmd openscap-plugin
         privacy: closed
         members:
+        - gvauter
         - marcusburghardt
         - vojtapolasek
         repos:
