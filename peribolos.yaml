@@ -28,6 +28,10 @@ orgs:
         default_branch: main
         description: ComplyTime project
         has_projects: true
+      "trestle-bot":
+        default_branch: main
+        description: A workflow automation tool for `compliance-trestle`
+        has_projects: true
     docs:
         description: Documentation
     teams:
@@ -67,3 +71,4 @@ orgs:
         repos:
           complytime: write
           compliance-to-policy-go: write
+          trestle-bot: write
