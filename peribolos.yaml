@@ -45,6 +45,7 @@ orgs:
         - huiwangredhat
         - jpower432
         - qduanmu
+        - RichardXuan
         repos:
           complytime: write
       openscap-plugin-approvers:
@@ -67,6 +68,7 @@ orgs:
         - marcusburghardt
         - jpower432
         - qduanmu
+        - RichardXuan
         - vojtapolasek
         repos:
           complytime: write
