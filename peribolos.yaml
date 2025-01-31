@@ -82,5 +82,6 @@ orgs:
           complytime: write
           complytime-demos: write
           compliance-to-policy-go: write
+          oscal-sdk-go: write
           trestle-bot: write
           oscal-content: write
