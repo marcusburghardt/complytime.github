@@ -32,6 +32,10 @@ orgs:
         default_branch: main
         description: A workflow automation tool for `compliance-trestle`
         has_projects: true
+      "oscal-content":
+        default_branch: main
+        description: An OSCAL content repository with test data for ComplyTime.
+        has_projects: true
     docs:
         description: Documentation
     teams:
@@ -74,3 +78,4 @@ orgs:
           complytime: write
           compliance-to-policy-go: write
           trestle-bot: write
+          oscal-content: write
