@@ -32,13 +32,13 @@ orgs:
         default_branch: main
         description: A repository to hold automation and examples used to demo ComplyTime features.
         has_projects: true
-      "trestle-bot":
-        default_branch: main
-        description: A workflow automation tool for `compliance-trestle`
-        has_projects: true
       "oscal-content":
         default_branch: main
         description: An OSCAL content repository with test data for ComplyTime.
+        has_projects: true
+      "trestle-bot":
+        default_branch: main
+        description: A workflow automation tool for `compliance-trestle`
         has_projects: true
     docs:
         description: Documentation
@@ -74,15 +74,15 @@ orgs:
         - gvauter
         - hbraswelrh
         - huiwangredhat
-        - marcusburghardt
         - jpower432
+        - marcusburghardt
         - qduanmu
         - RichardXuan
         - vojtapolasek
         repos:
+          compliance-to-policy-go: write
           complytime: write
           complytime-demos: write
-          compliance-to-policy-go: write
+          oscal-content: write
           oscal-sdk-go: write
           trestle-bot: write
-          oscal-content: write
