@@ -81,6 +81,7 @@ orgs:
         - vojtapolasek
         repos:
           compliance-to-policy-go: write
+          compliance-to-policy-python: write
           complytime: write
           complytime-demos: write
           oscal-content: write
