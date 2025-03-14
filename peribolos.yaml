@@ -40,6 +40,10 @@ orgs:
         default_branch: main
         description: A workflow automation tool for `compliance-trestle`
         has_projects: true
+      "vagrant-boxes":
+        default_branch: main
+        description: Automation for creating vagrant boxes.
+        has_projects: true
     docs:
         description: Documentation
     teams:
@@ -57,6 +61,7 @@ orgs:
         - RichardXuan
         repos:
           complytime: write
+          vagrant-boxes: write
       openscap-plugin-approvers:
         description: This would be a CODEOWNER group for cmd openscap-plugin
         privacy: closed
@@ -88,3 +93,4 @@ orgs:
           oscal-content: write
           oscal-sdk-go: write
           trestle-bot: write
+          vagrant-boxes: write
