@@ -22,7 +22,7 @@ orgs:
     repos:
       ".github":
         default_branch: main
-        description: demo
+        description: A repository to apply peribolos to manage organization complytime.
         has_projects: true
       "complytime":
         default_branch: main
@@ -80,6 +80,7 @@ orgs:
         - RichardXuan
         - vojtapolasek
         repos:
+          cac-content: write
           compliance-to-policy-go: write
           compliance-to-policy-python: write
           complytime: write
