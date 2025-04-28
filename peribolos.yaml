@@ -68,7 +68,6 @@ orgs:
         members:
         - gvauter
         - marcusburghardt
-        - vojtapolasek
         repos:
           complytime: write
       complytime-dev:
@@ -83,7 +82,6 @@ orgs:
         - marcusburghardt
         - qduanmu
         - RichardXuan
-        - vojtapolasek
         repos:
           cac-content: write
           compliance-to-policy-go: write
