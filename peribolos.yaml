@@ -6,11 +6,12 @@ orgs:
     has_repository_projects: true
     members_can_create_repositories: true
     admins:
-      - jpower432
-      - jflowers
-      - huiwangredhat
       - d10n
+      - jflowers
+      - jpower432
       - hbraswelrh
+      - huiwangredhat
+      - marcusburghardt
       - pme-bot
     members:
       - beatrizmcouto
