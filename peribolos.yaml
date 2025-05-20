@@ -6,7 +6,6 @@ orgs:
     has_repository_projects: true
     members_can_create_repositories: true
     admins:
-      - d10n
       - jflowers
       - jpower432
       - hbraswelrh
@@ -51,7 +50,6 @@ orgs:
         description: This would be a CODEOWNER group for cmd complytime
         privacy: closed
         members:
-        - d10n
         - gvauter
         - hbraswelrh
         - huiwangredhat
@@ -74,7 +72,6 @@ orgs:
         description: People working on complytime repo
         privacy: closed
         members:
-        - d10n
         - gvauter
         - hbraswelrh
         - huiwangredhat
