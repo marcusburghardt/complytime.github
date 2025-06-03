@@ -79,6 +79,7 @@ orgs:
         - marcusburghardt
         - qduanmu
         - RichardXuan
+        - beatrizmcouto
         repos:
           cac-content: write
           compliance-to-policy-go: write
