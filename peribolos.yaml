@@ -66,7 +66,7 @@ orgs:
         - qduanmu
         - RichardXuan
         repos:
-          complytime: write
+          complyctl: write
           vagrant-boxes: write
       openscap-plugin-approvers:
         description: This would be a CODEOWNER group for cmd openscap-plugin
@@ -75,7 +75,7 @@ orgs:
         - gvauter
         - marcusburghardt
         repos:
-          complytime: write
+          complyctl: write
       complytime-dev:
         description: People working on complytime repo
         privacy: closed
@@ -92,11 +92,11 @@ orgs:
           cac-content: write
           compliance-to-policy-go: write
           compliance-to-policy-python: write
-          complytime: write
+          complyctl: write
           complytime-demos: write
           oscal-content: write
           oscal-sdk-go: write
-          trestle-bot: write
+          complyscribe: write
           vagrant-boxes: write
           complybeacon: write
           cac-transpiler: write
