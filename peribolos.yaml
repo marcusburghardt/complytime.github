@@ -43,6 +43,14 @@ orgs:
         default_branch: main
         description: Automation for creating vagrant boxes.
         has_projects: true
+      "complybeacon":
+        default_branch: main
+        description: A policy-driven observability toolkit for compliance evidence collection
+        has_projects: true
+      "cac-transpiler":
+        default_branch: main
+        description: Compliance-as-Code language to language transformation
+        has_projects: true
     docs:
         description: Documentation
     teams:
@@ -90,3 +98,5 @@ orgs:
           oscal-sdk-go: write
           trestle-bot: write
           vagrant-boxes: write
+          complybeacon: write
+          cac-transpiler: write
