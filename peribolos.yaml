@@ -23,9 +23,9 @@ orgs:
         default_branch: main
         description: A repository to apply peribolos to manage organization complytime.
         has_projects: true
-      "complytime":
+      "complyctl":
         default_branch: main
-        description: ComplyTime project
+        description: A command-line tool for streamlining end-to-end compliance workflows on local systems.
         has_projects: true
       "complytime-demos":
         default_branch: main
@@ -35,9 +35,9 @@ orgs:
         default_branch: main
         description: An OSCAL content repository with test data for ComplyTime.
         has_projects: true
-      "trestle-bot":
+      "complyscribe":
         default_branch: main
-        description: A workflow automation tool for `compliance-trestle`
+        description: A workflow automation tool for compliance content authoring
         has_projects: true
       "vagrant-boxes":
         default_branch: main
