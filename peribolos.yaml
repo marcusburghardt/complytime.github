@@ -47,9 +47,13 @@ orgs:
         default_branch: main
         description: A policy-driven observability toolkit for compliance evidence collection
         has_projects: true
-      "cac-transpiler":
+      "gemara2oscal":
         default_branch: main
-        description: Compliance-as-Code language to language transformation
+        description: A transpiler for converting the gemara logicial model to OSCAL
+        has_projects: true
+      "compliance-to-policy-plugins"
+        default_branch: main
+        description: A repo with c2p plugins for complytime
         has_projects: true
     docs:
         description: Documentation
@@ -99,4 +103,5 @@ orgs:
           complyscribe: write
           vagrant-boxes: write
           complybeacon: write
-          cac-transpiler: write
+          gemara2oscal: write
+          compliance-to-policy-plugins: write
