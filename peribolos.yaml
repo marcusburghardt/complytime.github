@@ -16,7 +16,7 @@ orgs:
       - beatrizmcouto
       - gvauter
       - qduanmu
-      - RichardXuan
+      - AlexXuan233
       - vojtapolasek
     repos:
       ".github":
@@ -64,7 +64,7 @@ orgs:
         - jpower432
         - marcusburghardt
         - qduanmu
-        - RichardXuan
+        - AlexXuan233
         repos:
           complyctl: write
           vagrant-boxes: write
@@ -86,7 +86,7 @@ orgs:
         - jpower432
         - marcusburghardt
         - qduanmu
-        - RichardXuan
+        - AlexXuan233
         - beatrizmcouto
         repos:
           cac-content: write
