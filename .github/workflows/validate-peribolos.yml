@@ -16,10 +16,15 @@ jobs:
       - uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5.5.0
         with:
           go-version-file: './go.mod'
+
       - name: verify go modules and vendor directory
         run: |
           go mod tidy
           go mod vendor
+
       - name: running unit tests
         run: |
           go test ./...
+
+      - name: Install yamllint and check peribolos.yaml
+        run: pip install yamllint && yamllint peribolos.yaml
