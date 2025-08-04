@@ -62,13 +62,13 @@ orgs:
         description: This would be a CODEOWNER group for cmd complytime
         privacy: closed
         members:
-        - gvauter
-        - hbraswelrh
-        - huiwangredhat
-        - jpower432
-        - marcusburghardt
-        - qduanmu
-        - AlexXuan233
+          - gvauter
+          - hbraswelrh
+          - huiwangredhat
+          - jpower432
+          - marcusburghardt
+          - qduanmu
+          - AlexXuan233
         repos:
           complyctl: write
           vagrant-boxes: write
@@ -76,22 +76,22 @@ orgs:
         description: This would be a CODEOWNER group for cmd openscap-plugin
         privacy: closed
         members:
-        - gvauter
-        - marcusburghardt
+          - gvauter
+          - marcusburghardt
         repos:
           complyctl: write
       complytime-dev:
         description: People working on complytime repo
         privacy: closed
         members:
-        - gvauter
-        - hbraswelrh
-        - huiwangredhat
-        - jpower432
-        - marcusburghardt
-        - qduanmu
-        - AlexXuan233
-        - beatrizmcouto
+          - gvauter
+          - hbraswelrh
+          - huiwangredhat
+          - jpower432
+          - marcusburghardt
+          - qduanmu
+          - AlexXuan233
+          - beatrizmcouto
         repos:
           cac-content: write
           compliance-to-policy-go: write
