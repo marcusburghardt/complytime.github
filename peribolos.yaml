@@ -1,22 +1,22 @@
 orgs:
   complytime:
-    description: 
+    name: complytime
     default_repository_permission: read
     has_organization_projects: true
     has_repository_projects: true
     members_can_create_repositories: true
     admins:
-      - jflowers
-      - jpower432
       - hbraswelrh
       - huiwangredhat
+      - jflowers
+      - jpower432
       - marcusburghardt
       - pme-bot
     members:
+      - AlexXuan233
       - beatrizmcouto
       - gvauter
       - qduanmu
-      - AlexXuan233
       - vojtapolasek
     repos:
       ".github":
@@ -51,12 +51,12 @@ orgs:
         default_branch: main
         description: A transpiler for converting the gemara logicial model to OSCAL
         has_projects: true
-      "compliance-to-policy-plugins"
+      "compliance-to-policy-plugins":
         default_branch: main
         description: A repo with c2p plugins for complytime
         has_projects: true
     docs:
-        description: Documentation
+      description: Documentation
     teams:
       complytime-approvers:
         description: This would be a CODEOWNER group for cmd complytime
