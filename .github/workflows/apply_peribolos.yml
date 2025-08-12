@@ -15,14 +15,14 @@ jobs:
           go-version: "1.23"
           
       - name: Checkout complytime/.github repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         
       - name: Copy peribolos.yaml
         run: cp peribolos.yaml  /tmp
       
       - name: Checkout ghproxy and peribolos code
         if: ${{ github.repository_owner == 'complytime' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: kubernetes-sigs/prow
 
