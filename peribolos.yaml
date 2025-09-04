@@ -17,6 +17,7 @@ orgs:
       - beatrizmcouto
       - gvauter
       - qduanmu
+      - sonupreetam
       - vojtapolasek
     repos:
       ".github":
@@ -68,6 +69,7 @@ orgs:
           - jpower432
           - marcusburghardt
           - qduanmu
+          - sonupreetam
           - AlexXuan233
         repos:
           complyctl: write
@@ -90,6 +92,7 @@ orgs:
           - jpower432
           - marcusburghardt
           - qduanmu
+          - sonupreetam
           - AlexXuan233
           - beatrizmcouto
         repos:
