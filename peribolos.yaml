@@ -15,6 +15,7 @@ orgs:
     members:
       - AlexXuan233
       - beatrizmcouto
+      - bplaxco
       - gvauter
       - qduanmu
       - sonupreetam
@@ -59,6 +60,11 @@ orgs:
     docs:
       description: Documentation
     teams:
+      security-managers:
+        description: Enterprise security manager team
+        privacy: closed
+        members:
+          - bplaxco
       complytime-approvers:
         description: This would be a CODEOWNER group for cmd complytime
         privacy: closed
