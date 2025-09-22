@@ -20,21 +20,21 @@ We believe that effective compliance automation must be built on a foundation th
 
 ComplyTime is built on a foundation of modern, microservice-based components designed for flexibility and scale.
 
-* **[complyctl](./complyctl/)**: A CLI tool providing a consistent compliance foundation for platforms like RHEL.
-* **[complyscribe](./complyscribe/)**: A key component of our pluggable framework, this service acts as a compliance-to-policy (C2P) engine, designed to be extensible for various compliance frameworks, not only OSCAL.
+* **[complyctl](https://github.com/complytime/complyctl)**: A CLI tool providing a consistent compliance foundation for platforms like RHEL.
+* **[complyscribe](https://github.com/complytime/complyscribe)**: A key component of our pluggable framework, this service acts as a compliance-to-policy (C2P) engine, designed to be extensible for various compliance frameworks, not only OSCAL.
  <!-- TODO: A key component of our pluggable framework, this compliance authoring tool operates behind the scenes for an extensible integration for various compliance frameworks, not specific to OSCAL. -->
-* **[complybeacon](./complybeacon/)**: A observability toolkit leveraging OpenTelemetry to simplify audit logging and evidence collection in distributed environments like Kubernetes.
-* **[complytime-demos](./complytime-demos/)**: A collection of demonstrations and examples for using the ComplyTime framework.
+* **[complybeacon](https://github.com/complytime/complybeacon)**: A observability toolkit leveraging OpenTelemetry to simplify audit logging and evidence collection in distributed environments like Kubernetes.
+* **[complytime-demos](https://github.com/complytime/complytime-demos)**: A collection of demonstrations and examples for using the ComplyTime framework.
 
 We leverage powerful, targeted open source components to achieve our goals. For instance, we utilize `oscal-sdk-go` and `compliance-to-policy-go`, sub-projects of OSCAL-Compass that align with our engineering-first, multi-standard vision.
 
 ## Community & Contributing
 
-We are committed to the open source community. All the information you need to get started is in our **[community repository](./community/)**.
+We are committed to the open source community. All the information you need to get started is in our **[community repository](https://github.com/complytime/community)**.
 
-* **How to Contribute:** Check out our [Contributing Guide](./community/CONTRIBUTING.md) to learn how to submit your first pull request, find an issue to work on, and understand our development process.
-* **Community Standards:** Our [Code of Conduct](./community/CODE_OF_CONDUCT.md) outlines the standards we uphold to maintain a welcoming and inclusive environment for everyone.
-* **Project Governance:** Read our [Governance](./community/GOVERNANCE.md) document to understand our project roles and decision-making processes.
+* **How to Contribute:** Check out our [Contributing Guide](https://github.com/complytime/community/blob/main/CONTRIBUTING.md) to learn how to submit your first pull request, find an issue to work on, and understand our development process.
+* **Community Standards:** Our [Code of Conduct](https://github.com/complytime/community/blob/main/CODE_OF_CONDUCT.md) outlines the standards we uphold to maintain a welcoming and inclusive environment for everyone.
+* **Project Governance:** Read our [Governance](https://github.com/complytime/community/blob/main/GOVERNANCE.md) document to understand our project roles and decision-making processes.
 
 ## The Road Ahead
 
