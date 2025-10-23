@@ -49,6 +49,10 @@ orgs:
         default_branch: main
         description: A transpiler for converting the gemara logical model to OSCAL
         has_projects: true
+      "org-infra":
+        default_branch: main
+        description: Repository for reusable workflows, shared configurations, and templates used in ComplyTime org.
+        has_projects: true
       "oscal-content":
         default_branch: main
         description: An OSCAL content repository with test data for ComplyTime.
@@ -112,6 +116,7 @@ orgs:
           complyscribe: write
           complytime-demos: write
           gemara2oscal: write
+          org-infra: write
           oscal-content: write
           oscal-sdk-go: write
           vagrant-boxes: write
