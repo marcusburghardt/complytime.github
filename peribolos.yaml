@@ -25,37 +25,37 @@ orgs:
         default_branch: main
         description: A repository to apply peribolos to manage organization complytime.
         has_projects: true
-      "complyctl":
+      "compliance-to-policy-plugins":
         default_branch: main
-        description: A command-line tool for streamlining end-to-end compliance workflows on local systems.
-        has_projects: true
-      "complytime-demos":
-        default_branch: main
-        description: A repository to hold automation and examples used to demo ComplyTime features.
-        has_projects: true
-      "oscal-content":
-        default_branch: main
-        description: An OSCAL content repository with test data for ComplyTime.
-        has_projects: true
-      "complyscribe":
-        default_branch: main
-        description: A workflow automation tool for compliance content authoring
-        has_projects: true
-      "vagrant-boxes":
-        default_branch: main
-        description: Automation for creating vagrant boxes.
+        description: A repo with c2p plugins for complytime
         has_projects: true
       "complybeacon":
         default_branch: main
         description: A policy-driven observability toolkit for compliance evidence collection
         has_projects: true
+      "complyctl":
+        default_branch: main
+        description: A command-line tool for streamlining end-to-end compliance workflows on local systems.
+        has_projects: true
+      "complyscribe":
+        default_branch: main
+        description: A workflow automation tool for compliance content authoring
+        has_projects: true
+      "complytime-demos":
+        default_branch: main
+        description: A repository to hold automation and examples used to demo ComplyTime features.
+        has_projects: true
       "gemara2oscal":
         default_branch: main
-        description: A transpiler for converting the gemara logicial model to OSCAL
+        description: A transpiler for converting the gemara logical model to OSCAL
         has_projects: true
-      "compliance-to-policy-plugins":
+      "oscal-content":
         default_branch: main
-        description: A repo with c2p plugins for complytime
+        description: An OSCAL content repository with test data for ComplyTime.
+        has_projects: true
+      "vagrant-boxes":
+        default_branch: main
+        description: Automation for creating vagrant boxes.
         has_projects: true
     docs:
       description: Documentation
@@ -67,7 +67,7 @@ orgs:
           - bplaxco
           - qduanmu
       complytime-approvers:
-        description: This would be a CODEOWNER group for cmd complytime
+        description: This would be a CODEOWNERS group for cmd complytime
         privacy: closed
         members:
           - gvauter
@@ -82,7 +82,7 @@ orgs:
           complyctl: write
           vagrant-boxes: write
       openscap-plugin-approvers:
-        description: This would be a CODEOWNER group for cmd openscap-plugin
+        description: This would be a CODEOWNERS group for cmd openscap-plugin
         privacy: closed
         members:
           - gvauter
@@ -105,13 +105,13 @@ orgs:
         repos:
           cac-content: write
           compliance-to-policy-go: write
+          compliance-to-policy-plugins: write
           compliance-to-policy-python: write
+          complybeacon: write
           complyctl: write
+          complyscribe: write
           complytime-demos: write
+          gemara2oscal: write
           oscal-content: write
           oscal-sdk-go: write
-          complyscribe: write
           vagrant-boxes: write
-          complybeacon: write
-          gemara2oscal: write
-          compliance-to-policy-plugins: write
