@@ -61,6 +61,10 @@ orgs:
         default_branch: main
         description: Automation for creating vagrant boxes.
         has_projects: true
+      "gemara-mcp-server":
+        default_branch: main
+        description: A MCP server for automating the authoring of GRC Risk Assessment documentation in gemara.
+        has_projects: true
     docs:
       description: Documentation
     teams:
@@ -119,3 +123,4 @@ orgs:
           oscal-content: write
           oscal-sdk-go: write
           vagrant-boxes: write
+          gemara-mcp-server: write
