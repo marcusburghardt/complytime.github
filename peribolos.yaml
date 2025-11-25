@@ -65,6 +65,10 @@ orgs:
         default_branch: main
         description: A MCP server for automating the authoring of GRC Risk Assessment documentation in gemara.
         has_projects: true
+      "community":
+        default_branch: main
+        description: Community-related documents for the ComplyTime project.
+        has_projects: true
     docs:
       description: Documentation
     teams:
@@ -111,6 +115,7 @@ orgs:
           - beatrizmcouto
         repos:
           cac-content: write
+          community: write
           compliance-to-policy-go: write
           compliance-to-policy-plugins: write
           compliance-to-policy-python: write
