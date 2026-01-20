@@ -25,13 +25,13 @@ orgs:
         default_branch: main
         description: A repository to apply peribolos to manage organization complytime.
         has_projects: true
+      "community":
+        default_branch: main
+        description: Community-related documents for the ComplyTime project.
+        has_projects: true
       "compliance-to-policy-plugins":
         default_branch: main
         description: A repo with c2p plugins for complytime
-        has_projects: true
-      "complytime-collector-components":
-        default_branch: main
-        description: A policy-driven observability toolkit for compliance evidence collection
         has_projects: true
       "complyctl":
         default_branch: main
@@ -41,9 +41,21 @@ orgs:
         default_branch: main
         description: A workflow automation tool for compliance content authoring
         has_projects: true
+      "complytime-collector-components":
+        default_branch: main
+        description: A policy-driven observability toolkit for compliance evidence collection
+        has_projects: true
+      "complytime-collector-distro":
+        default_branch: main
+        description: Repository for beacon collector releases
+        has_projects: true
       "complytime-demos":
         default_branch: main
         description: A repository to hold automation and examples used to demo ComplyTime features.
+        has_projects: true
+      "complytime-policies":
+        default_branch: main
+        description: Repository for complytime engineering policies expressed in Gemara
         has_projects: true
       "gemara2oscal":
         default_branch: main
@@ -64,17 +76,6 @@ orgs:
       "gemara-mcp-server":
         default_branch: main
         description: A MCP server for automating the authoring of GRC Risk Assessment documentation in gemara.
-        has_projects: true
-      "complytime-policies":
-        default_branch: main
-        description: Repository for complytime engineering policies expressed in Gemara
-        has_projects: true
-      "complytime-collector-distro":
-        default_branch: main
-        description: Repository for beacon collector releases
-      "community":
-        default_branch: main
-        description: Community-related documents for the ComplyTime project.
         has_projects: true
     docs:
       description: Documentation
@@ -125,9 +126,9 @@ orgs:
           community: write
           compliance-to-policy-go: write
           compliance-to-policy-plugins: write
-          compliance-to-policy-python: write
           complytime-collector-components: write
           complytime-collector-distro: write
+          complytime-policies: write
           complyctl: write
           complyscribe: write
           complytime-demos: write
