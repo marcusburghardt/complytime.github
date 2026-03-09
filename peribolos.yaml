@@ -12,13 +12,13 @@ orgs:
       - jpower432
       - marcusburghardt
       - pme-bot
+      - sonupreetam
     members:
       - AlexXuan233
       - beatrizmcouto
       - bplaxco
       - gvauter
       - qduanmu
-      - sonupreetam
       - vojtapolasek
     repos:
       ".github":
