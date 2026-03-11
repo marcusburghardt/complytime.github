@@ -29,10 +29,6 @@ orgs:
         default_branch: main
         description: Community-related documents for the ComplyTime project.
         has_projects: true
-      "compliance-to-policy-plugins":
-        default_branch: main
-        description: A repo with c2p plugins for complytime
-        has_projects: true
       "complyctl":
         default_branch: main
         description: A command-line tool for streamlining end-to-end compliance workflows on local systems.
@@ -57,10 +53,6 @@ orgs:
         default_branch: main
         description: Repository for complytime engineering policies expressed in Gemara
         has_projects: true
-      "gemara2oscal":
-        default_branch: main
-        description: A transpiler for converting the gemara logical model to OSCAL
-        has_projects: true
       "gemara-content-service":
         default_branch: main
         description: A content delivery and enrichment service for Gemara compliance artifacts.
@@ -68,18 +60,6 @@ orgs:
       "org-infra":
         default_branch: main
         description: Repository for reusable workflows, shared configurations, and templates used in ComplyTime org.
-        has_projects: true
-      "oscal-content":
-        default_branch: main
-        description: An OSCAL content repository with test data for ComplyTime.
-        has_projects: true
-      "vagrant-boxes":
-        default_branch: main
-        description: Automation for creating vagrant boxes.
-        has_projects: true
-      "gemara-mcp-server":
-        default_branch: main
-        description: A MCP server for automating the authoring of GRC Risk Assessment documentation in gemara.
         has_projects: true
       "website":
         default_branch: main
@@ -107,7 +87,6 @@ orgs:
           - AlexXuan233
         repos:
           complyctl: write
-          vagrant-boxes: write
       openscap-plugin-approvers:
         description: This would be a CODEOWNERS group for cmd openscap-plugin
         privacy: closed
@@ -130,21 +109,13 @@ orgs:
           - AlexXuan233
           - beatrizmcouto
         repos:
-          cac-content: write
           community: write
-          compliance-to-policy-go: write
-          compliance-to-policy-plugins: write
           complytime-collector-components: write
           complytime-collector-distro: write
           complytime-policies: write
           complyctl: write
           complyscribe: write
           complytime-demos: write
-          gemara2oscal: write
           gemara-content-service: write
           org-infra: write
-          oscal-content: write
-          oscal-sdk-go: write
-          vagrant-boxes: write
-          gemara-mcp-server: write
           website: write
