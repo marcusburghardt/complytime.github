@@ -37,13 +37,13 @@ orgs:
         default_branch: main
         description: A workflow automation tool for compliance content authoring
         has_projects: true
+      "complytime":
+        default_branch: main
+        description: Repository for complytime releases
+        has_projects: true
       "complytime-collector-components":
         default_branch: main
         description: A policy-driven observability toolkit for compliance evidence collection
-        has_projects: true
-      "complytime-collector-distro":
-        default_branch: main
-        description: Repository for beacon collector releases
         has_projects: true
       "complytime-demos":
         default_branch: main
@@ -111,7 +111,7 @@ orgs:
         repos:
           community: write
           complytime-collector-components: write
-          complytime-collector-distro: write
+          complytime: write
           complytime-policies: write
           complyctl: write
           complyscribe: write
