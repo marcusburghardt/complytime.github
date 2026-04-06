@@ -6,6 +6,7 @@ orgs:
     has_repository_projects: true
     members_can_create_repositories: true
     admins:
+      - beatrizmcouto
       - gvauter
       - hbraswelrh
       - huiwangredhat
@@ -16,7 +17,6 @@ orgs:
       - sonupreetam
     members:
       - AlexXuan233
-      - beatrizmcouto
       - bplaxco
       - qduanmu
       - vojtapolasek
