@@ -6,19 +6,19 @@ orgs:
     has_repository_projects: true
     members_can_create_repositories: true
     admins:
-      - beatrizmcouto
-      - gvauter
-      - hbraswelrh
       - huiwangredhat
       - jflowers
       - jpower432
       - marcusburghardt
       - pme-bot
-      - sonupreetam
     members:
       - AlexXuan233
+      - beatrizmcouto
       - bplaxco
+      - gvauter
+      - hbraswelrh
       - qduanmu
+      - sonupreetam
       - vojtapolasek
     repos:
       ".github":
@@ -73,10 +73,30 @@ orgs:
         privacy: closed
         members:
           - bplaxco
+      community-managers:
+        description: Community managers who handle labels, reviews, and issue triage without write access
+        privacy: closed
+        members:
+          - beatrizmcouto
+          - hbraswelrh
+          - sonupreetam
+        repos:
+          ".github": triage
+          community: triage
+          complyctl: triage
+          complyscribe: triage
+          complytime: triage
+          complytime-collector-components: triage
+          complytime-demos: triage
+          complytime-policies: triage
+          gemara-content-service: triage
+          org-infra: triage
+          website: triage
       complytime-approvers:
         description: This would be a CODEOWNERS group for cmd complytime
         privacy: closed
         members:
+          - AlexXuan233
           - gvauter
           - hbraswelrh
           - huiwangredhat
@@ -84,7 +104,6 @@ orgs:
           - marcusburghardt
           - qduanmu
           - sonupreetam
-          - AlexXuan233
         repos:
           complyctl: write
       openscap-plugin-approvers:
@@ -99,6 +118,7 @@ orgs:
         description: People working on complytime repo
         privacy: closed
         members:
+          - AlexXuan233
           - gvauter
           - hbraswelrh
           - huiwangredhat
@@ -106,16 +126,14 @@ orgs:
           - marcusburghardt
           - qduanmu
           - sonupreetam
-          - AlexXuan233
-          - beatrizmcouto
         repos:
           community: write
-          complytime-collector-components: write
-          complytime: write
-          complytime-policies: write
           complyctl: write
           complyscribe: write
+          complytime: write
+          complytime-collector-components: write
           complytime-demos: write
+          complytime-policies: write
           gemara-content-service: write
           org-infra: write
           website: write
