@@ -6,7 +6,6 @@ orgs:
     has_repository_projects: true
     members_can_create_repositories: true
     admins:
-      - huiwangredhat
       - jflowers
       - jpower432
       - marcusburghardt
@@ -17,6 +16,7 @@ orgs:
       - bplaxco
       - gvauter
       - hbraswelrh
+      - huiwangredhat
       - qduanmu
       - sonupreetam
       - vojtapolasek
@@ -48,6 +48,10 @@ orgs:
       "complytime-demos":
         default_branch: main
         description: A repository to hold automation and examples used to demo ComplyTime features.
+        has_projects: true
+      "complytime-providers":
+        default_branch: main
+        description: complyctl providers (formerly plugins)
         has_projects: true
       "complytime-policies":
         default_branch: main
@@ -89,6 +93,7 @@ orgs:
           complytime-collector-components: triage
           complytime-demos: triage
           complytime-policies: triage
+          complytime-providers: triage
           gemara-content-service: triage
           org-infra: triage
           website: triage
@@ -96,13 +101,10 @@ orgs:
         description: This would be a CODEOWNERS group for cmd complytime
         privacy: closed
         members:
-          - AlexXuan233
           - gvauter
           - hbraswelrh
-          - huiwangredhat
           - jpower432
           - marcusburghardt
-          - qduanmu
           - sonupreetam
         repos:
           complyctl: write
@@ -118,13 +120,10 @@ orgs:
         description: People working on complytime repo
         privacy: closed
         members:
-          - AlexXuan233
           - gvauter
           - hbraswelrh
-          - huiwangredhat
           - jpower432
           - marcusburghardt
-          - qduanmu
           - sonupreetam
         repos:
           community: write
@@ -134,6 +133,7 @@ orgs:
           complytime-collector-components: write
           complytime-demos: write
           complytime-policies: write
+          complytime-providers: write
           gemara-content-service: write
           org-infra: write
           website: write
