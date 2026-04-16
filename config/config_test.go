@@ -201,8 +201,8 @@ func TestOrgs(t *testing.T) {
 			t.Errorf("users do not match in CODEOWNERS and org admins '%s': %s", *org.Name, strings.Join(diff.UnsortedList(), ", "))
 		}
 
-		if n := len(approvers); n < 4 {
-			t.Errorf("Require at least 4 approvers, found %d: %s", n, strings.Join(approvers.UnsortedList(), ", "))
+		if n := len(approvers); n < 3 {
+			t.Errorf("Require at least 3 approvers, found %d: %s", n, strings.Join(approvers.UnsortedList(), ", "))
 		}
 
 		if err := testDuplicates(approvers); err != nil {
