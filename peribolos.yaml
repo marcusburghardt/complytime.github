@@ -19,6 +19,7 @@ orgs:
       - huiwangredhat
       - qduanmu
       - sonupreetam
+      - trevor-vaughan
       - vojtapolasek
     repos:
       ".github":
@@ -106,6 +107,7 @@ orgs:
           - jpower432
           - marcusburghardt
           - sonupreetam
+          - trevor-vaughan
         repos:
           complyctl: write
       openscap-plugin-approvers:
@@ -125,6 +127,7 @@ orgs:
           - jpower432
           - marcusburghardt
           - sonupreetam
+          - trevor-vaughan
         repos:
           community: write
           complyctl: write
