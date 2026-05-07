@@ -225,5 +225,11 @@ func TestOrgs(t *testing.T) {
 		if !isSorted(org.Members) {
 			t.Errorf("members for %s org are unsorted", *org.Name)
 		}
+
+		if org.Teams != nil {
+			for _, err := range testTeamMembers(org.Teams, admins, allOrgMembers, *org.Name) {
+				t.Errorf("%v", err)
+			}
+		}
 	}
 }

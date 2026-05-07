@@ -1,14 +1,35 @@
+# Workflow to apply the Peribolos org configuration.
+# Runs on push to main, daily schedule, or manual dispatch.
+# Uses the complytime-bot GitHub App for authentication.
 name: Apply Peribolos
+
 on:
   push:
     branches:
       - main
   pull_request:
+  schedule:
+    # Daily at 05:30 UTC — results visible by EU morning (07:30 CEST / 06:30 CET)
+    - cron: '30 5 * * *'
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: 'Run Peribolos without --confirm (dry-run mode)'
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: peribolos-apply
+  cancel-in-progress: false
+
 jobs:
   Apply-peribolos:
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    steps:        
+    permissions:
+      contents: read
+    steps:
       - name: Checkout complytime/.github repo
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
@@ -19,36 +40,61 @@ jobs:
 
       - name: Copy peribolos.yaml
         run: cp peribolos.yaml /tmp
-      
-      - name: Checkout ghproxy and peribolos code
-        if: ${{ github.repository_owner == 'complytime' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+
+      - name: Checkout peribolos code
+        if: >-
+          github.repository_owner == 'complytime' &&
+          github.event_name != 'pull_request'
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           repository: kubernetes-sigs/prow
 
-      - name: Build ghproxy
-        if: ${{ github.repository_owner == 'complytime' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        run: |
-          cd cmd/ghproxy
-          go mod tidy
-          go build -o ghproxy .
-          cp ghproxy /tmp
-
       - name: Build peribolos
-        if: ${{ github.repository_owner == 'complytime' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        if: >-
+          github.repository_owner == 'complytime' &&
+          github.event_name != 'pull_request'
         run: |
           cd cmd/peribolos
           go mod tidy
-          go build -o  .
+          go build -o .
           cp peribolos /tmp
 
+      - name: Generate GitHub App token
+        if: >-
+          github.repository_owner == 'complytime' &&
+          github.event_name != 'pull_request'
+        id: app-token
+        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+        with:
+          client-id: ${{ secrets.COMPLYTIME_BOT_CLIENT_ID }}
+          private-key: ${{ secrets.COMPLYTIME_BOT_PRIVATE_KEY }}
+          owner: complytime
+
       - name: Apply peribolos.yaml
-        if: ${{ github.repository_owner == 'complytime' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        if: >-
+          github.repository_owner == 'complytime' &&
+          github.event_name != 'pull_request'
+        env:
+          APP_TOKEN: ${{ steps.app-token.outputs.token }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run }}
         run: |
-          echo ${{ secrets.APP_ACCESS_TOKEN }} > auth.txt
-          /tmp/ghproxy --legacy-disable-disk-cache-partitions-by-auth-header=false --get-throttling-time-ms=300 --throttling-time-ms=900 --throttling-time-v4-ms=850 --throttling-max-delay-duration-seconds=45 --throttling-max-delay-duration-v4-seconds=110 --request-timeout=120 1>/dev/null 2>&1 &
-          pid=$!
-          jobs
-          /tmp/peribolos --config-path /tmp/peribolos.yaml  --fix-org --fix-org-members --fix-teams --fix-team-members --fix-repos --fix-team-repos --min-admins 2 --github-token-path auth.txt --confirm 2>&1 | jq -r '[.severity, .time, .msg] | join(" | ")'
-          kill $pid
-          rm auth.txt
+          set -o pipefail
+
+          PERIBOLOS_ARGS=(
+            --config-path /tmp/peribolos.yaml
+            --fix-org
+            --fix-org-members
+            --fix-teams
+            --fix-team-members
+            --fix-repos
+            --fix-team-repos
+            --min-admins 2
+            --require-self=false
+            --github-token-path <(printf '%s' "$APP_TOKEN")
+          )
+
+          if [ "$DRY_RUN" != "true" ]; then
+            PERIBOLOS_ARGS+=(--confirm)
+          fi
+
+          /tmp/peribolos "${PERIBOLOS_ARGS[@]}" 2>&1 | jq -r '[.severity, .time, .msg] | join(" | ")'

@@ -77,8 +77,6 @@ orgs:
         default_branch: main
         description: The ComplyTime website
         has_projects: true
-    docs:
-      description: Documentation
     teams:
       security-managers:
         description: Enterprise security manager team
@@ -108,11 +106,12 @@ orgs:
       complytime-approvers:
         description: This would be a CODEOWNERS group for cmd complytime
         privacy: closed
+        maintainers:
+          - jpower432
+          - marcusburghardt
         members:
           - gvauter
           - hbraswelrh
-          - jpower432
-          - marcusburghardt
           - sonupreetam
           - trevor-vaughan
         repos:
@@ -120,19 +119,21 @@ orgs:
       openscap-plugin-approvers:
         description: This would be a CODEOWNERS group for cmd openscap-plugin
         privacy: closed
+        maintainers:
+          - marcusburghardt
         members:
           - gvauter
-          - marcusburghardt
         repos:
           complyctl: write
       complytime-dev:
         description: People working on complytime repo
         privacy: closed
+        maintainers:
+          - jpower432
+          - marcusburghardt
         members:
           - gvauter
           - hbraswelrh
-          - jpower432
-          - marcusburghardt
           - sonupreetam
           - trevor-vaughan
         repos:
