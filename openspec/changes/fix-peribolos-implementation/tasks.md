@@ -4,7 +4,7 @@
 - [x] 1.2 Update the Peribolos execution step to use the generated token via safe file writing (`env:` block, not inline expansion), add `--require-self=false` flag, and ensure `--min-admins 2` is present
 - [x] 1.3 Add `set -o pipefail` to the Peribolos execution step to fix silent failure masking
 - [x] 1.4 Remove ghproxy build, download, and sidecar process from the workflow (not used by Peribolos)
-- [x] 1.5 Add unconditional token file cleanup step (`if: always()`) to remove `auth.txt` after Peribolos runs
+- [x] 1.5 ~~Add unconditional token file cleanup step~~ Eliminated by using process substitution — no credentials written to disk
 - [x] 1.6 Add explicit `permissions:` block at the job level with minimal scopes
 
 ## 2. Add Workflow Triggers

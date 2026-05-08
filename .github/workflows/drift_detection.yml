@@ -50,12 +50,13 @@ jobs:
         env:
           APP_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
+          set -o pipefail
           /tmp/peribolos \
             --config-path peribolos.yaml \
             --require-self=false \
             --github-token-path <(printf '%s' "$APP_TOKEN") \
             --dump complytime \
-            --dump-full 2>/dev/null | yq -P 'sort_keys(..)' > /tmp/org-actual.yaml
+            --dump-full 2>/tmp/peribolos-dump-stderr.log | yq -P 'sort_keys(..)' > /tmp/org-actual.yaml
           yq -P 'sort_keys(..)' peribolos.yaml > /tmp/org-expected.yaml
 
       - name: Compare org state

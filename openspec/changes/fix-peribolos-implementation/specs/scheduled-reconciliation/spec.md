@@ -3,7 +3,7 @@
 **Depends on**: `token-auth` (authentication mechanism)
 
 ### Requirement: Daily scheduled Peribolos execution
-The apply workflow SHALL include a `schedule` trigger with a daily cron expression (e.g., `cron: '30 6 * * *'`) to automatically reconcile org state with `peribolos.yaml`. The cron time SHOULD avoid top-of-hour slots to reduce GitHub Actions scheduling delays.
+The apply workflow SHALL include a `schedule` trigger with a daily cron expression (e.g., `cron: '30 5 * * *'`) to automatically reconcile org state with `peribolos.yaml`. The cron time SHOULD avoid top-of-hour slots to reduce GitHub Actions scheduling delays.
 
 #### Scenario: Daily cron triggers apply
 - **GIVEN** the apply workflow is deployed with a daily `schedule` trigger
