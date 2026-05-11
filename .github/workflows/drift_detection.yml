@@ -26,7 +26,10 @@ jobs:
         with:
           go-version-file: './go.mod'
 
-      - name: Checkout and build peribolos
+      - name: Copy peribolos.yaml
+        run: cp peribolos.yaml /tmp
+
+      - name: Checkout peribolos code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           repository: kubernetes-sigs/prow
@@ -52,12 +55,12 @@ jobs:
         run: |
           set -o pipefail
           /tmp/peribolos \
-            --config-path peribolos.yaml \
+            --config-path /tmp/peribolos.yaml \
             --require-self=false \
             --github-token-path <(printf '%s' "$APP_TOKEN") \
             --dump complytime \
             --dump-full 2>/tmp/peribolos-dump-stderr.log | yq -P 'sort_keys(..)' > /tmp/org-actual.yaml
-          yq -P 'sort_keys(..)' peribolos.yaml > /tmp/org-expected.yaml
+          yq -P 'sort_keys(..)' /tmp/peribolos.yaml > /tmp/org-expected.yaml
 
       - name: Compare org state
         id: diff

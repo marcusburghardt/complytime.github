@@ -90,11 +90,12 @@ jobs:
             --fix-team-repos
             --min-admins 2
             --require-self=false
-            --github-token-path <(printf '%s' "$APP_TOKEN")
           )
 
           if [ "$DRY_RUN" != "true" ]; then
             PERIBOLOS_ARGS+=(--confirm)
           fi
 
-          /tmp/peribolos "${PERIBOLOS_ARGS[@]}" 2>&1 | jq -r '[.severity, .time, .msg] | join(" | ")'
+          /tmp/peribolos "${PERIBOLOS_ARGS[@]}" \
+            --github-token-path <(printf '%s' "$APP_TOKEN") \
+            2>&1 | jq -r '[.severity, .time, .msg] | join(" | ")'
