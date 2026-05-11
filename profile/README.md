@@ -21,8 +21,7 @@ We believe that effective compliance automation must be built on a foundation th
 ComplyTime is built on a foundation of modern, microservice-based components designed for flexibility and scale.
 
 * **[complyctl](https://github.com/complytime/complyctl)**: A CLI tool providing a consistent compliance foundation for platforms like RHEL.
-* **[complyscribe](https://github.com/complytime/complyscribe)**: A key component of our pluggable framework, this service acts as a compliance-to-policy (C2P) engine, designed to be extensible for various compliance frameworks, not only OSCAL.
- <!-- TODO: A key component of our pluggable framework, this compliance authoring tool operates behind the scenes for an extensible integration for various compliance frameworks, not specific to OSCAL. -->
+* **[complyscribe](https://github.com/complytime/complyscribe)** *(archived)*: Previously used for CaC/OSCAL content transformation.
 * **[complybeacon](https://github.com/complytime/complybeacon)**: A observability toolkit leveraging OpenTelemetry to simplify audit logging and evidence collection in distributed environments like Kubernetes.
 * **[complytime-demos](https://github.com/complytime/complytime-demos)**: A collection of demonstrations and examples for using the ComplyTime framework.
 
