@@ -11,45 +11,54 @@ https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-f
 
 #### Scenario: This repo CODEOWNERS moved from root to .github
 
-- **WHEN** the CODEOWNERS file is created at `.github/CODEOWNERS` in the
-  `.github` repository
-- **THEN** the root `CODEOWNERS` file SHALL be deleted and all ownership
-  rules SHALL be defined in `.github/CODEOWNERS`
+- **GIVEN** the `.github` repository previously had CODEOWNERS at the root
+- **WHEN** the migration is complete
+- **THEN** `.github/CODEOWNERS` exists with the ownership rules
+- **AND** the root `CODEOWNERS` file is deleted
 
 ### Requirement: .github repo CODEOWNERS includes complytime-approvers team
 
 The `.github` repository CODEOWNERS SHALL include both individual admin
 users and the `@complytime/complytime-approvers` team as code owners for
-all files. The format SHALL be:
+all files. The file at `.github/CODEOWNERS` SHALL contain the line:
 
 ```
 * @jflowers @jpower432 @marcusburghardt @complytime/complytime-approvers
 ```
 
-#### Scenario: Team and individual owners on same line
+#### Scenario: CODEOWNERS file content validated
 
-- **WHEN** a pull request is opened in the `.github` repository
-- **THEN** review is requested from the individual admins and any member
-  of the `complytime-approvers` team, and approval from any one of them
-  satisfies the CODEOWNERS requirement
+- **GIVEN** the `.github/CODEOWNERS` file exists in this repository
+- **WHEN** the file is read
+- **THEN** it contains the line
+  `* @jflowers @jpower432 @marcusburghardt @complytime/complytime-approvers`
+
+Note: GitHub will request review from the individual admins and any member of
+the `complytime-approvers` team when a PR is opened. Approval from any one of
+them satisfies the CODEOWNERS requirement.
 
 ### Requirement: complyctl CODEOWNERS cleaned up
 
-The complyctl repository CODEOWNERS SHALL be simplified to a single fallback
-rule assigning `@complytime/complytime-dev` as the owner for all files. The
-stale `/cmd/openscap-plugin/` rule and the `/cmd/complyctl/` specific rule
-SHALL be removed.
+The complyctl repository (at `.github/CODEOWNERS`, which is the file's current
+location) SHALL be simplified to a single fallback rule assigning
+`@complytime/complytime-dev` as the owner for all files. The stale
+`/cmd/openscap-plugin/` rule and the `/cmd/complyctl/` specific rule SHALL be
+removed.
 
 #### Scenario: Stale openscap-plugin rule removed
 
-- **WHEN** the complyctl CODEOWNERS is updated
+- **GIVEN** the complyctl `.github/CODEOWNERS` file has been updated
+- **WHEN** the file is read
 - **THEN** there is no rule referencing `/cmd/openscap-plugin/` or
   `@complytime/openscap-plugin-approvers`
 
 #### Scenario: Single fallback rule
 
-- **WHEN** a pull request is opened in complyctl modifying any file
-- **THEN** review is requested from `@complytime/complytime-dev`
+- **GIVEN** the complyctl `.github/CODEOWNERS` file has been updated
+- **WHEN** the file is read
+- **THEN** the only rule is `* @complytime/complytime-dev`
+
+Note: GitHub will request review from `@complytime/complytime-dev` for all PRs.
 
 ### Requirement: complytime-providers CODEOWNERS created with per-provider rules
 
@@ -65,23 +74,19 @@ The file SHALL contain:
 /cmd/opa-provider/ @complytime/opa-provider-approvers
 ```
 
-#### Scenario: Provider-specific change triggers provider team review
+#### Scenario: CODEOWNERS file content validated
 
-- **WHEN** a pull request modifies files only under `/cmd/openscap-provider/`
-- **THEN** review is requested from `@complytime/openscap-provider-approvers`
-  only (last matching pattern takes precedence over the `*` fallback)
+- **GIVEN** the complytime-providers `.github/CODEOWNERS` file has been created
+- **WHEN** the file is read
+- **THEN** it contains the fallback rule `* @complytime/complytime-dev` and
+  per-provider rules for `/cmd/openscap-provider/`, `/cmd/ampel-provider/`,
+  and `/cmd/opa-provider/`
 
-#### Scenario: Shared code change triggers dev team review
-
-- **WHEN** a pull request modifies files under `/internal/` or root-level files
-- **THEN** review is requested from `@complytime/complytime-dev`
-
-#### Scenario: Cross-provider change triggers multiple teams
-
-- **WHEN** a pull request modifies files in both `/cmd/openscap-provider/`
-  and `/cmd/ampel-provider/`
-- **THEN** review is requested from both `@complytime/openscap-provider-approvers`
-  and `@complytime/ampel-provider-approvers`
+Note: GitHub uses last-matching-pattern semantics. A PR modifying only
+`/cmd/openscap-provider/` triggers review from `openscap-provider-approvers`
+only. A PR modifying both `/cmd/openscap-provider/` and `/internal/` triggers
+review from both the provider team and `complytime-dev`. Shared code under
+`/internal/` or root-level files match only the `*` fallback.
 
 ### Requirement: complytime-policies CODEOWNERS created
 
@@ -94,8 +99,19 @@ as code owners for all files.
 * @complytime/complytime-policies-approvers @complytime/complytime-dev
 ```
 
-#### Scenario: Both teams requested for review
+#### Scenario: CODEOWNERS file content validated
 
-- **WHEN** a pull request is opened in complytime-policies modifying any file
-- **THEN** review is requested from both `@complytime/complytime-policies-approvers`
-  and `@complytime/complytime-dev`
+- **GIVEN** the complytime-policies `.github/CODEOWNERS` file has been created
+- **WHEN** the file is read
+- **THEN** it contains the line
+  `* @complytime/complytime-policies-approvers @complytime/complytime-dev`
+
+Note: GitHub will request review from both teams for all PRs.
+
+### Scope Note
+
+Validation of CODEOWNERS files in complyctl, complytime-providers, and
+complytime-policies is out of scope for `config_test.go` in this repository.
+Each repository's own CI pipeline is responsible for validating its CODEOWNERS
+file. The `config_test.go` in this repo only validates the `.github/CODEOWNERS`
+file within this repository.

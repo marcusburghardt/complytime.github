@@ -9,21 +9,30 @@ the `.github/` directory.
 
 #### Scenario: Test reads CODEOWNERS from .github directory
 
-- **WHEN** config_test.go runs with default flags
+- **GIVEN** config_test.go runs with default flags
+- **WHEN** `loadOwners` is invoked
 - **THEN** the test reads the CODEOWNERS file from `../.github/CODEOWNERS`
   instead of `../CODEOWNERS`
 
 ### Requirement: CODEOWNERS parsing separates users from teams
 
-The `loadOwners` function SHALL separate CODEOWNERS entries into individual
-users and team references. A team reference is identified by the presence of
-a `/` character in the owner string (e.g., `@complytime/complytime-approvers`).
-Individual users do not contain a `/`.
+The `loadOwners` function SHALL return separate lists for individual users
+and team references. The return signature SHALL be
+`(users []string, teams []string, err error)`.
+
+A team reference is identified by the presence of a `/` character in the owner
+string (e.g., `@complytime/complytime-approvers`). Individual users do not
+contain a `/`.
+
+Individual users SHALL have the `@` prefix stripped (e.g., `"jflowers"` not
+`"@jflowers"`). Team references SHALL retain the org-qualified form without
+`@` (e.g., `"complytime/complytime-approvers"`).
 
 #### Scenario: Mixed individual and team owners parsed
 
-- **WHEN** the CODEOWNERS file contains
+- **GIVEN** the CODEOWNERS file contains
   `* @jflowers @jpower432 @marcusburghardt @complytime/complytime-approvers`
+- **WHEN** `loadOwners` parses the file
 - **THEN** individual users are `["jflowers", "jpower432", "marcusburghardt"]`
   and team references are `["complytime/complytime-approvers"]`
 
@@ -35,12 +44,14 @@ org admins. This preserves the existing validation behavior. The minimum of
 
 #### Scenario: Non-admin individual in CODEOWNERS
 
+- **GIVEN** peribolos.yaml is loaded with its org admin list
 - **WHEN** the CODEOWNERS file lists an individual user who is not an org admin
 - **THEN** the test fails with an error indicating the user does not match
   org admins
 
 #### Scenario: Fewer than 3 individual approvers
 
+- **GIVEN** peribolos.yaml is loaded
 - **WHEN** the CODEOWNERS file lists fewer than 3 individual users
 - **THEN** the test fails with an error indicating insufficient approvers
 
@@ -49,32 +60,49 @@ org admins. This preserves the existing validation behavior. The minimum of
 The test SHALL validate that all team references in CODEOWNERS correspond to
 teams defined in peribolos.yaml. The team name extracted from the CODEOWNERS
 entry (the part after the `/`, e.g., `complytime-approvers` from
-`@complytime/complytime-approvers`) MUST exist as a key in the org's teams map.
+`complytime/complytime-approvers`) MUST exist as a key in the org's teams map.
 
 #### Scenario: Valid team reference
 
+- **GIVEN** peribolos.yaml is loaded and contains the team `complytime-approvers`
 - **WHEN** the CODEOWNERS file references `@complytime/complytime-approvers`
-  and the team `complytime-approvers` exists in peribolos.yaml
 - **THEN** the test passes the team reference validation
 
 #### Scenario: Invalid team reference
 
+- **GIVEN** peribolos.yaml is loaded and contains no team `nonexistent-team`
 - **WHEN** the CODEOWNERS file references `@complytime/nonexistent-team`
-  and no team `nonexistent-team` exists in peribolos.yaml
 - **THEN** the test fails with an error indicating the team does not exist
   in the org configuration
 
 ### Requirement: No duplicate owners in CODEOWNERS
 
 The test SHALL validate that there are no duplicate entries in the CODEOWNERS
-file, checking both individual users and team references.
+file, checking both individual users and team references independently.
 
 #### Scenario: Duplicate individual user
 
-- **WHEN** the CODEOWNERS file lists the same user twice
+- **GIVEN** the CODEOWNERS file has been parsed
+- **WHEN** the same user appears twice in the owners list
 - **THEN** the test fails with a duplicate approvers error
 
 #### Scenario: Duplicate team reference
 
-- **WHEN** the CODEOWNERS file lists the same team twice
+- **GIVEN** the CODEOWNERS file has been parsed
+- **WHEN** the same team appears twice in the owners list
 - **THEN** the test fails with a duplicate teams error
+
+## PRESERVED Requirements
+
+The following validations already exist in `config_test.go` and MUST be
+maintained. The `loadOwners` changes MUST NOT regress these behaviors:
+
+- **Privacy check**: `testTeamMembers` validates all teams have `privacy: closed`
+- **Admin-as-maintainer check**: `testTeamMembers` validates non-admins are not
+  listed as maintainers and admins are not listed as regular members
+- **Sorted lists check**: `testTeamMembers` validates maintainer and member lists
+  are alphabetically sorted
+- **Org membership check**: `testTeamMembers` validates all team members are org
+  members
+- **Duplicate check**: `testTeamMembers` validates no duplicate maintainers or
+  members within a team

@@ -3,18 +3,22 @@
 ### Requirement: Rename openscap-plugin-approvers to openscap-provider-approvers
 
 The peribolos configuration SHALL rename the team `openscap-plugin-approvers` to
-`openscap-provider-approvers`. The team description SHALL reference
-"openscap-provider in complytime-providers". Maintainers SHALL be `jpower432`
-and `marcusburghardt`. Members SHALL be `gvauter`, `hbraswelrh`, `sonupreetam`,
-and `trevor-vaughan`. The team SHALL have write access to `complytime-providers`
-and SHALL NOT have access to `complyctl`.
+`openscap-provider-approvers`. The team SHALL have `privacy: closed`. The team
+description SHALL reference "openscap-provider in complytime-providers".
+Maintainers SHALL be `jpower432` and `marcusburghardt`. Members SHALL be
+`gvauter`, `hbraswelrh`, `sonupreetam`, and `trevor-vaughan`. The team SHALL
+have write access to `complytime-providers` and SHALL NOT have access to
+`complyctl`.
 
 #### Scenario: Team renamed and repo access updated
 
-- **WHEN** peribolos applies the configuration
-- **THEN** the team `openscap-plugin-approvers` is renamed to
-  `openscap-provider-approvers` with write access to `complytime-providers`
-  and no access to `complyctl`
+- **GIVEN** the peribolos.yaml file contains the updated team definition
+- **WHEN** peribolos.yaml is parsed
+- **THEN** a team `openscap-provider-approvers` exists with `privacy: closed`,
+  maintainers `["jpower432", "marcusburghardt"]`, members `["gvauter",
+  "hbraswelrh", "sonupreetam", "trevor-vaughan"]`, and repos including
+  `complytime-providers: write`
+- **AND** no team named `openscap-plugin-approvers` exists
 
 ### Requirement: Create ampel-provider-approvers team
 
@@ -25,10 +29,12 @@ The team SHALL have write access to `complytime-providers`.
 
 #### Scenario: Team created with correct membership
 
-- **WHEN** peribolos applies the configuration
+- **GIVEN** the peribolos.yaml file contains the team definition
+- **WHEN** peribolos.yaml is parsed
 - **THEN** the team `ampel-provider-approvers` exists with `privacy: closed`,
-  the specified maintainers and members, and write access to
-  `complytime-providers`
+  maintainers `["jpower432", "marcusburghardt"]`, members `["gvauter",
+  "hbraswelrh", "sonupreetam", "trevor-vaughan"]`, and repos including
+  `complytime-providers: write`
 
 ### Requirement: Create opa-provider-approvers team
 
@@ -39,9 +45,11 @@ Members SHALL be `fortiz-ai`, `gvauter`, `hbraswelrh`, `sonupreetam`, and
 
 #### Scenario: Team created with provider-specific member
 
-- **WHEN** peribolos applies the configuration
-- **THEN** the team `opa-provider-approvers` exists with `fortiz-ai` as a
-  member in addition to all complytime-dev members
+- **GIVEN** the peribolos.yaml file contains the team definition
+- **WHEN** peribolos.yaml is parsed
+- **THEN** the team `opa-provider-approvers` exists with `privacy: closed`,
+  members including `fortiz-ai` in addition to all complytime-dev members,
+  and repos including `complytime-providers: write`
 
 ### Requirement: Create complytime-policies-approvers team
 
@@ -52,10 +60,11 @@ access to `complytime-policies`.
 
 #### Scenario: Team created for Gemara content ownership
 
-- **WHEN** peribolos applies the configuration
+- **GIVEN** the peribolos.yaml file contains the team definition
+- **WHEN** peribolos.yaml is parsed
 - **THEN** the team `complytime-policies-approvers` exists with `privacy: closed`,
-  the specified maintainers, `fortiz-ai` as a member, and write access to
-  `complytime-policies`
+  maintainers `["jflowers", "jpower432", "marcusburghardt"]`, member `fortiz-ai`,
+  and repos including `complytime-policies: write`
 
 ### Requirement: Repurpose complytime-approvers team
 
@@ -68,17 +77,25 @@ have write access to `complyctl` or `complytime`.
 
 #### Scenario: Team repurposed with updated membership and repos
 
-- **WHEN** peribolos applies the configuration
-- **THEN** the team `complytime-approvers` has the updated description,
-  maintainers (jflowers, jpower432, marcusburghardt), members (beatrizmcouto,
-  hbraswelrh), and write access only to `.github`, `community`,
-  `complytime-demos`, and `website`
+- **GIVEN** the peribolos.yaml file contains the updated team definition
+- **WHEN** peribolos.yaml is parsed
+- **THEN** the team `complytime-approvers` has maintainers `["jflowers",
+  "jpower432", "marcusburghardt"]`, members `["beatrizmcouto", "hbraswelrh"]`,
+  and repos `.github`, `community`, `complytime-demos`, `website` (all write)
 
 #### Scenario: Previous members removed
 
-- **WHEN** peribolos applies the configuration
-- **THEN** `gvauter`, `sonupreetam`, and `trevor-vaughan` are no longer
+- **GIVEN** the peribolos.yaml file contains the updated team definition
+- **WHEN** peribolos.yaml is parsed
+- **THEN** `gvauter`, `sonupreetam`, and `trevor-vaughan` are not listed as
   members of `complytime-approvers`
+
+## PRESERVED Requirements
+
+The following validations already exist in `config_test.go` (via
+`testTeamMembers`). They are documented here to confirm they MUST be maintained
+and will apply to all new and modified teams. No new test code is needed for
+these — the existing validation covers them.
 
 ### Requirement: All teams use privacy closed
 
@@ -96,9 +113,10 @@ References:
 
 #### Scenario: Secret team rejected by validation
 
+- **GIVEN** peribolos.yaml is loaded and config_test.go runs `testTeamMembers`
 - **WHEN** a team in peribolos.yaml uses `privacy: secret`
-- **THEN** the config_test.go validation fails with an error indicating
-  the team does not have the `privacy: closed` field
+- **THEN** the validation fails with an error indicating the team does not have
+  the `privacy: closed` field
 
 ### Requirement: Team maintainers must be org admins
 
@@ -108,15 +126,17 @@ listed in a team SHALL be listed as maintainers, not members.
 
 #### Scenario: Non-admin listed as maintainer
 
-- **WHEN** a non-admin user is listed as a team maintainer in peribolos.yaml
-- **THEN** the config_test.go validation fails with an error indicating
-  the user should be in the members list
+- **GIVEN** peribolos.yaml is loaded and config_test.go runs `testTeamMembers`
+- **WHEN** a non-admin user is listed as a team maintainer
+- **THEN** the validation fails with an error indicating the user should be in
+  the members list
 
 #### Scenario: Admin listed as member
 
-- **WHEN** an org admin is listed as a team member in peribolos.yaml
-- **THEN** the config_test.go validation fails with an error indicating
-  the user should be in the maintainers list
+- **GIVEN** peribolos.yaml is loaded and config_test.go runs `testTeamMembers`
+- **WHEN** an org admin is listed as a team member
+- **THEN** the validation fails with an error indicating the user should be in
+  the maintainers list
 
 ### Requirement: Team member and maintainer lists must be sorted
 
@@ -125,6 +145,6 @@ sorted alphabetically.
 
 #### Scenario: Unsorted member list
 
-- **WHEN** a team has an unsorted member list in peribolos.yaml
-- **THEN** the config_test.go validation fails with an error indicating
-  the list is unsorted
+- **GIVEN** peribolos.yaml is loaded and config_test.go runs `testTeamMembers`
+- **WHEN** a team has an unsorted member list
+- **THEN** the validation fails with an error indicating the list is unsorted

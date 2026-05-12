@@ -104,7 +104,22 @@ orgs:
           org-infra: triage
           website: triage
       complytime-approvers:
-        description: This would be a CODEOWNERS group for cmd complytime
+        description: Write access to non-code repos for project stakeholders
+        privacy: closed
+        maintainers:
+          - jflowers
+          - jpower432
+          - marcusburghardt
+        members:
+          - beatrizmcouto
+          - hbraswelrh
+        repos:
+          ".github": write
+          community: write
+          complytime-demos: write
+          website: write
+      ampel-provider-approvers:
+        description: CODEOWNERS group for ampel-provider in complytime-providers
         privacy: closed
         maintainers:
           - jpower432
@@ -115,16 +130,45 @@ orgs:
           - sonupreetam
           - trevor-vaughan
         repos:
-          complyctl: write
-      openscap-plugin-approvers:
-        description: This would be a CODEOWNERS group for cmd openscap-plugin
+          complytime-providers: write
+      openscap-provider-approvers:
+        description: CODEOWNERS group for openscap-provider in complytime-providers
         privacy: closed
         maintainers:
+          - jpower432
           - marcusburghardt
         members:
           - gvauter
+          - hbraswelrh
+          - sonupreetam
+          - trevor-vaughan
         repos:
-          complyctl: write
+          complytime-providers: write
+      opa-provider-approvers:
+        description: CODEOWNERS group for opa-provider in complytime-providers
+        privacy: closed
+        maintainers:
+          - jpower432
+          - marcusburghardt
+        members:
+          - fortiz-ai
+          - gvauter
+          - hbraswelrh
+          - sonupreetam
+          - trevor-vaughan
+        repos:
+          complytime-providers: write
+      complytime-policies-approvers:
+        description: CODEOWNERS group for complytime-policies
+        privacy: closed
+        maintainers:
+          - jflowers
+          - jpower432
+          - marcusburghardt
+        members:
+          - fortiz-ai
+        repos:
+          complytime-policies: write
       complytime-dev:
         description: People working on complytime repo
         privacy: closed

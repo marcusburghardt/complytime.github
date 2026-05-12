@@ -3,9 +3,14 @@
 The complytime GitHub organization manages 12 repositories with peribolos
 (declarative GitHub org management via YAML). The organization recently split
 content from `complyctl` by moving the openscap-plugin to `complytime-providers`
-(now called "providers"). Two providers exist today (openscap, ampel), a third
+(the concept formerly called "plugins" is now called "providers"). Two providers exist today (openscap, ampel), a third
 (opa) is expected. Additionally, `complytime-policies` needs dedicated ownership
 for Gemara compliance content.
+
+This change assumes the `fix-peribolos-implementation` change has been applied.
+That change wires the `testTeamMembers()` validation function into `TestOrgs()`
+and fixes admin/member role placement in existing teams. The new teams defined
+here follow the corrected role assignment pattern established by that change.
 
 Current state:
 - `openscap-plugin-approvers` team still points at `complyctl` with stale naming
@@ -120,9 +125,22 @@ explored and deferred for simplicity.
 
 **[Cross-repo coordination]** Changes span 4 repositories. CODEOWNERS changes
 in complyctl, complytime-providers, and complytime-policies depend on the
-teams existing first (via peribolos apply).
+teams existing first (via peribolos apply). If CODEOWNERS references a
+non-existent team, GitHub silently ignores the reference — PRs merge without
+the intended review gate, which is a silent security degradation.
 -> Mitigation: Apply peribolos.yaml changes first (teams must exist before
-CODEOWNERS references them). CODEOWNERS updates in other repos follow.
+CODEOWNERS references them). CODEOWNERS updates in other repos follow. After
+peribolos apply, trigger the `drift_detection.yml` workflow manually to confirm
+convergence between peribolos.yaml and the actual GitHub org state.
+
+**[Team rename partial failure]** Renaming `openscap-plugin-approvers` to
+`openscap-provider-approvers` is a destructive, non-atomic operation — peribolos
+deletes the old team and creates the new one. If the apply fails midway, the
+old team may be deleted before the new team is created, temporarily leaving
+affected users without team-based write access.
+-> Mitigation: Risk accepted. The impact is limited to the openscap-plugin team
+rename only. Users retain org-level read access and complytime-dev write access
+during any transient state. The drift detection workflow catches divergence.
 
 **[Provider team divergence from CODEOWNERS]** If the last-matching-pattern
 rule in CODEOWNERS selects only a provider team and a future member is removed

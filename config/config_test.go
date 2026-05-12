@@ -32,7 +32,7 @@ import (
 )
 
 var configPath = flag.String("config", "../peribolos.yaml", "Path to peribolos config")
-var ownersDir = flag.String("owners-dir", "../", "Directory to CODEOWNERS")
+var ownersDir = flag.String("owners-dir", "../.github", "Directory to CODEOWNERS")
 
 var cfg org.FullConfig
 
@@ -62,34 +62,37 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func loadOwners(dir string) ([]string, error) {
-	var owners []string
-
+func loadOwners(dir string) (users []string, teams []string, err error) {
 	dir = path.Clean(dir)
 	file, err := os.Open(path.Join(dir, "CODEOWNERS"))
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	ruleset, err := codeowners.ParseFile(file)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	rule, err := ruleset.Match(*configPath)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	if rule == nil {
-		return nil, fmt.Errorf("no matching rule found for %s", *configPath)
+		return nil, nil, fmt.Errorf("no matching rule found for %s", *configPath)
 	}
 
 	for _, owner := range rule.Owners {
-		owners = append(owners, owner.String())
+		ownerStr := owner.String()
+		if strings.Contains(ownerStr, "/") {
+			teams = append(teams, ownerStr)
+		} else {
+			users = append(users, ownerStr)
+		}
 	}
 
-	return owners, nil
+	return users, teams, nil
 }
 
 func testDuplicates(list sets.Set[string]) error {
@@ -185,7 +188,7 @@ func testTeamMembers(teams map[string]org.Team, admins sets.Set[string], orgMemb
 }
 
 func TestOrgs(t *testing.T) {
-	own, err := loadOwners(*ownersDir)
+	ownUsers, ownTeams, err := loadOwners(*ownersDir)
 	if err != nil {
 		t.Fatalf("failed to load CODEOWNERS: %v", err)
 	}
@@ -195,7 +198,8 @@ func TestOrgs(t *testing.T) {
 		admins := normalize(sets.New(org.Admins...))
 		allOrgMembers := members.Union(admins)
 
-		approvers := normalize(sets.New(own...))
+		// Validate individual CODEOWNERS users are org admins
+		approvers := normalize(sets.New(ownUsers...))
 
 		if diff := approvers.Difference(admins); len(diff) > 0 {
 			t.Errorf("users do not match in CODEOWNERS and org admins '%s': %s", *org.Name, strings.Join(diff.UnsortedList(), ", "))
@@ -207,6 +211,27 @@ func TestOrgs(t *testing.T) {
 
 		if err := testDuplicates(approvers); err != nil {
 			t.Errorf("duplicate approvers: %v", err)
+		}
+
+		// Validate CODEOWNERS team references exist in peribolos config
+		teamRefs := normalize(sets.New(ownTeams...))
+
+		if err := testDuplicates(teamRefs); err != nil {
+			t.Errorf("duplicate team references in CODEOWNERS: %v", err)
+		}
+
+		if org.Teams != nil {
+			for _, ref := range teamRefs.UnsortedList() {
+				// Team references are in the form "org/team-name";
+				// extract the team name (part after the last "/").
+				teamName := ref
+				if idx := strings.LastIndex(ref, "/"); idx >= 0 {
+					teamName = ref[idx+1:]
+				}
+				if _, exists := org.Teams[teamName]; !exists {
+					t.Errorf("CODEOWNERS references team '%s' which does not exist in org '%s' teams", ref, *org.Name)
+				}
+			}
 		}
 
 		if both := admins.Intersection(members); len(both) > 0 {

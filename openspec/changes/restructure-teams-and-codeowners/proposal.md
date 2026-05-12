@@ -1,7 +1,8 @@
 ## Why
 
 The complytime organization has undergone structural changes: the openscap-plugin
-was moved from complyctl to complytime-providers (now called "providers"), and
+was moved from complyctl to complytime-providers (the concept formerly called
+"plugins" is now called "providers"), and
 complytime-providers now hosts multiple providers (openscap, ampel) with a third
 (opa) expected. Additionally, complytime-policies needs dedicated ownership for
 Gemara content. The current peribolos team structure and CODEOWNERS files do not
@@ -46,6 +47,10 @@ no per-provider review gates.
 
 (none -- no existing specs to modify)
 
+### Removed Capabilities
+
+(none -- `openscap-plugin-approvers` is being renamed, not removed)
+
 ## Impact
 
 - **peribolos.yaml**: Team definitions restructured (1 rename, 3 creates,
@@ -58,5 +63,8 @@ no per-provider review gates.
 - **CODEOWNERS (complytime-providers)**: New file with per-provider ownership.
 - **CODEOWNERS (complytime-policies)**: New file with combined team ownership.
 - **Cross-repo**: Changes span 4 repositories (.github, complyctl,
-  complytime-providers, complytime-policies). Each repo's changes are independent
-  but should be coordinated.
+  complytime-providers, complytime-policies). CODEOWNERS changes in other repos
+  MUST NOT be merged until peribolos has applied the new team definitions.
+- **Documentation**: No README or CONTRIBUTING updates required. PR descriptions
+  for cross-repo CODEOWNERS changes should explain the new review gate behavior
+  to contributors of the affected repositories.
