@@ -1,6 +1,11 @@
 # Workflow to detect drift between peribolos.yaml and actual GitHub org state.
 # Runs weekly on Monday mornings. Opens or updates a GitHub issue when drift is detected.
-name: Drift Detection
+#
+# Approach: runs peribolos in dry-run mode (without --confirm) and checks if it
+# would make any changes. If mutation log lines exist, drift is detected.
+# This avoids `peribolos --dump` which calls GET /user (incompatible with
+# installation tokens).
+name: "Peribolos: Drift"
 
 on:
   schedule:
@@ -49,32 +54,60 @@ jobs:
           private-key: ${{ secrets.COMPLYTIME_BOT_PRIVATE_KEY }}
           owner: complytime
 
-      - name: Dump current org state
+      - name: Run peribolos dry-run
+        id: drift
         env:
           APP_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
-          set -o pipefail
           /tmp/peribolos \
             --config-path /tmp/peribolos.yaml \
+            --fix-org \
+            --fix-org-members \
+            --fix-teams \
+            --fix-team-members \
+            --fix-repos \
+            --fix-team-repos \
+            --min-admins 2 \
+            --required-admins jflowers \
+            --required-admins jpower432 \
+            --required-admins marcusburghardt \
             --require-self=false \
             --github-token-path <(printf '%s' "$APP_TOKEN") \
-            --dump complytime \
-            --dump-full 2>/tmp/peribolos-dump-stderr.log | yq -P 'sort_keys(..)' > /tmp/org-actual.yaml
-          yq -P 'sort_keys(..)' /tmp/peribolos.yaml > /tmp/org-expected.yaml
+            2>&1 > /tmp/peribolos-dryrun.log || true
 
-      - name: Compare org state
-        id: diff
-        run: |
-          if diff -u /tmp/org-expected.yaml /tmp/org-actual.yaml > /tmp/drift-diff.txt 2>&1; then
+          echo "--- Peribolos dry-run output ---"
+          jq -r '[.severity, .time, .msg] | join(" | ")' /tmp/peribolos-dryrun.log
+
+          # Check for fatal errors (auth failure, config error, etc.)
+          if jq -e 'select(.severity == "fatal")' /tmp/peribolos-dryrun.log > /dev/null 2>&1; then
+            echo "::error::Peribolos dry-run failed. See output above."
+            exit 1
+          fi
+
+          # Extract mutation lines — these indicate drift
+          jq -r 'select(.msg | test("^(Edit|Update|Remove|Create|Delete|Add)")) | .msg' \
+            /tmp/peribolos-dryrun.log > /tmp/drift-mutations.txt
+
+          DRIFT_COUNT=$(wc -l < /tmp/drift-mutations.txt)
+          if [ "$DRIFT_COUNT" -eq 0 ]; then
             echo "drift=false" >> "$GITHUB_OUTPUT"
             echo "No drift detected."
           else
             echo "drift=true" >> "$GITHUB_OUTPUT"
-            echo "Drift detected between peribolos.yaml and actual org state."
+            echo "Drift detected: ${DRIFT_COUNT} change(s) would be applied:"
+            cat /tmp/drift-mutations.txt
           fi
 
+      - name: Upload dry-run log
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: peribolos-dryrun-log
+          path: /tmp/peribolos-dryrun.log
+          retention-days: 7
+
       - name: Check for existing drift issue
-        if: steps.diff.outputs.drift == 'true'
+        if: steps.drift.outputs.drift == 'true'
         id: existing-issue
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -88,7 +121,7 @@ jobs:
           echo "issue_number=${ISSUE_NUMBER}" >> "$GITHUB_OUTPUT"
 
       - name: Create or update drift issue
-        if: steps.diff.outputs.drift == 'true'
+        if: steps.drift.outputs.drift == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ steps.existing-issue.outputs.issue_number }}
@@ -102,18 +135,16 @@ jobs:
             echo "**Date**: ${TIMESTAMP}"
             echo "**Workflow run**: ${WORKFLOW_URL}"
             echo ""
-            echo "The actual GitHub org state differs from what is declared in \`peribolos.yaml\`."
-            echo "This may indicate manual changes were made via the GitHub UI."
+            echo "The following changes would be applied by Peribolos to reconcile"
+            echo "the actual GitHub org state with \`peribolos.yaml\`:"
             echo ""
-            echo "### Diff"
-            echo ""
-            echo '```diff'
-            cat /tmp/drift-diff.txt
+            echo '```'
+            cat /tmp/drift-mutations.txt
             echo '```'
             echo ""
             echo "### Recommended Action"
             echo ""
-            echo "- Review the diff to determine if the changes are intentional"
+            echo "- Review the changes to determine if the drift is intentional"
             echo "- If unintentional: trigger a manual Peribolos apply via \`workflow_dispatch\`"
             echo "- If intentional: update \`peribolos.yaml\` to match the desired state"
           } > /tmp/issue-body.md

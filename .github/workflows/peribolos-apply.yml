@@ -1,7 +1,7 @@
 # Workflow to apply the Peribolos org configuration.
 # Runs on push to main, daily schedule, or manual dispatch.
 # Uses the complytime-bot GitHub App for authentication.
-name: Apply Peribolos
+name: "Peribolos: Apply"
 
 on:
   push:

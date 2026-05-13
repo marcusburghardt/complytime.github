@@ -1,4 +1,4 @@
-name: Verify Peribolos
+name: "Peribolos: Validate"
 
 on:
   push:
