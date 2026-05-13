@@ -30,7 +30,69 @@ vendor: ## go mod sync
 
 clean: ## remove generated files
 	rm -f coverage.out
+	rm -f /tmp/peribolos
 .PHONY: clean
+
+##@ Peribolos (local testing)
+
+PERIBOLOS_BIN := /tmp/peribolos
+PERIBOLOS_TOKEN_PATH ?= $(HOME)/.config/peribolos/token
+
+ensure-peribolos: ## build peribolos binary if not present
+	@if [ ! -f $(PERIBOLOS_BIN) ]; then \
+		echo "Building peribolos..."; \
+		TMPDIR=$$(mktemp -d); \
+		git clone --depth 1 https://github.com/kubernetes-sigs/prow.git "$$TMPDIR/prow"; \
+		cd "$$TMPDIR/prow/cmd/peribolos" && go mod tidy && go build -o $(PERIBOLOS_BIN) .; \
+		rm -rf "$$TMPDIR"; \
+		echo "Peribolos built at $(PERIBOLOS_BIN)"; \
+	else \
+		echo "Peribolos already at $(PERIBOLOS_BIN)"; \
+	fi
+.PHONY: ensure-peribolos
+
+peribolos-dryrun: ensure-peribolos ## dry-run peribolos against the live org (no changes)
+	@if [ ! -f $(PERIBOLOS_TOKEN_PATH) ]; then \
+		echo "Token not found at $(PERIBOLOS_TOKEN_PATH)"; \
+		echo "Create it with: mkdir -p ~/.config/peribolos && gh auth token > ~/.config/peribolos/token"; \
+		exit 1; \
+	fi
+	$(PERIBOLOS_BIN) \
+		--config-path peribolos.yaml \
+		--fix-org \
+		--fix-org-members \
+		--fix-teams \
+		--fix-team-members \
+		--fix-repos \
+		--fix-team-repos \
+		--min-admins 2 \
+		--require-self=false \
+		--github-token-path $(PERIBOLOS_TOKEN_PATH) \
+		2>&1 | jq -r '[.severity, .time, .msg] | join(" | ")'
+.PHONY: peribolos-dryrun
+
+peribolos-apply: ensure-peribolos ## apply peribolos config to the live org (DESTRUCTIVE)
+	@if [ ! -f $(PERIBOLOS_TOKEN_PATH) ]; then \
+		echo "Token not found at $(PERIBOLOS_TOKEN_PATH)"; \
+		echo "Create it with: mkdir -p ~/.config/peribolos && gh auth token > ~/.config/peribolos/token"; \
+		exit 1; \
+	fi
+	@echo "WARNING: This will modify the complytime GitHub org. Press Ctrl+C to abort."
+	@sleep 3
+	$(PERIBOLOS_BIN) \
+		--config-path peribolos.yaml \
+		--fix-org \
+		--fix-org-members \
+		--fix-teams \
+		--fix-team-members \
+		--fix-repos \
+		--fix-team-repos \
+		--min-admins 2 \
+		--require-self=false \
+		--confirm \
+		--github-token-path $(PERIBOLOS_TOKEN_PATH) \
+		2>&1 | jq -r '[.severity, .time, .msg] | join(" | ")'
+.PHONY: peribolos-apply
 
 ##@ CRAP Load Monitoring
 
@@ -52,7 +114,7 @@ crapload-baseline: ensure-gaze test-unit ## generate baseline thresholds in .gaz
 	@mkdir -p .gaze
 	@REPO_ROOT=$$(pwd); \
 	gaze crap --format=json --coverprofile=$(GAZE_COVERPROFILE) ./... | \
-		jq --arg root "$$REPO_ROOT/" '(.scores[],.summary.worst_crap[]?,.summary.worst_gaze_crap[]?) |= (.file |= ltrimstr($$root))' > $(GAZE_BASELINE)
+		jq --arg root "$$REPO_ROOT/" '(.scores // []) as $$s | .scores = [$$s[] | .file |= ltrimstr($$root)] | .summary.worst_crap = [(.summary.worst_crap // [])[] | .file |= ltrimstr($$root)] | .summary.worst_gaze_crap = [(.summary.worst_gaze_crap // [])[] | .file |= ltrimstr($$root)]' > $(GAZE_BASELINE)
 	@echo "Baseline written to $(GAZE_BASELINE)"
 .PHONY: crapload-baseline
 
@@ -63,10 +125,10 @@ crapload-check: ensure-gaze test-unit ## check for CRAP regressions against base
 	fi
 	@REPO_ROOT=$$(pwd); \
 	gaze crap --format=json --coverprofile=$(GAZE_COVERPROFILE) ./... | \
-		jq --arg root "$$REPO_ROOT/" '(.scores[],.summary.worst_crap[]?,.summary.worst_gaze_crap[]?) |= (.file |= ltrimstr($$root))' > /tmp/crapload-current.json
+		jq --arg root "$$REPO_ROOT/" '(.scores // []) as $$s | .scores = [$$s[] | .file |= ltrimstr($$root)] | .summary.worst_crap = [(.summary.worst_crap // [])[] | .file |= ltrimstr($$root)] | .summary.worst_gaze_crap = [(.summary.worst_gaze_crap // [])[] | .file |= ltrimstr($$root)]' > /tmp/crapload-current.json
 	@echo "Comparing against baseline..."
-	@jq -r '.scores[] | "\(.file):\(.function) \(.crap) \(.gaze_crap // 0)"' $(GAZE_BASELINE) | sort > /tmp/crapload-baseline.txt
-	@jq -r '.scores[] | "\(.file):\(.function) \(.crap) \(.gaze_crap // 0)"' /tmp/crapload-current.json | sort > /tmp/crapload-current.txt
+	@jq -r '(.scores // [])[] | "\(.file):\(.function) \(.crap) \(.gaze_crap // 0)"' $(GAZE_BASELINE) | sort > /tmp/crapload-baseline.txt
+	@jq -r '(.scores // [])[] | "\(.file):\(.function) \(.crap) \(.gaze_crap // 0)"' /tmp/crapload-current.json | sort > /tmp/crapload-current.txt
 	@REGRESSIONS=0; \
 	while IFS=' ' read -r func crap gaze_crap; do \
 		baseline_crap=$$(grep -F "$$func " /tmp/crapload-baseline.txt | head -1 | awk '{print $$2}'); \
