@@ -1,0 +1,13 @@
+{
+  "scores": [],
+  "summary": {
+    "total_functions": 0,
+    "avg_complexity": 0,
+    "avg_line_coverage": 0,
+    "avg_crap": 0,
+    "crapload": 0,
+    "crap_threshold": 15,
+    "worst_crap": [],
+    "worst_gaze_crap": []
+  }
+}
