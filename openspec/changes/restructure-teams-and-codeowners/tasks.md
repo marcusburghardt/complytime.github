@@ -4,11 +4,11 @@
 - [x] 1.2 Create `ampel-provider-approvers` team in peribolos.yaml with `privacy: closed`, maintainers `jpower432` and `marcusburghardt`, members `gvauter`, `hbraswelrh`, `sonupreetam`, `trevor-vaughan`, and `complytime-providers: write`
 - [x] 1.3 Create `opa-provider-approvers` team in peribolos.yaml with `privacy: closed`, maintainers `jpower432` and `marcusburghardt`, members `fortiz-ai`, `gvauter`, `hbraswelrh`, `sonupreetam`, `trevor-vaughan`, and `complytime-providers: write`
 - [x] 1.4 Create `complytime-policies-approvers` team in peribolos.yaml with `privacy: closed`, maintainers `jflowers`, `jpower432`, `marcusburghardt`, member `fortiz-ai`, and `complytime-policies: write`
-- [x] 1.5 Repurpose `complytime-approvers` in peribolos.yaml: update description to "Write access to non-code repos for project stakeholders", set maintainers to `jflowers`, `jpower432`, `marcusburghardt`, set members to `beatrizmcouto`, `hbraswelrh`, set repos to `.github`, `community`, `complytime-demos`, `website` (all write)
+- [x] 1.5 Repurpose `complytime-approvers` in peribolos.yaml: update description to "Write access to non-code repos for project stakeholders", set maintainers to `jflowers`, `jpower432`, `marcusburghardt`, set members to `beatrizmcouto`, `hbraswelrh`, set repos to `community`, `complytime-demos`, `website` (all write). `.github` excluded — no non-admin write access to the org management repo.
 
 ## 2. CODEOWNERS for This Repo (.github)
 
-- [x] 2.1 Create `.github/CODEOWNERS` with content: `* @jflowers @jpower432 @marcusburghardt @complytime/complytime-approvers`
+- [x] 2.1 Create `.github/CODEOWNERS` with content: `* @jflowers @jpower432 @marcusburghardt` (team excluded for privilege escalation prevention)
 - [x] 2.2 Delete the root `CODEOWNERS` file if it exists
 
 ## 3. CODEOWNERS for complyctl (repo: complyctl) [blocked-by: 1.x applied via peribolos]
@@ -31,6 +31,10 @@
 - [x] 6.4 Maintain existing validation that individual CODEOWNERS users are org admins with minimum 3 required
 - [x] 6.5 Add duplicate check for team references
 - [x] 6.6 Run `go test ./...` and verify all tests pass (covers privacy:closed, sorted lists, admin-as-maintainer from existing `testTeamMembers` — no new code needed for those)
+
+## 7a. Peribolos Admin Protection (this repo: .github)
+
+- [x] 7a.1 Add `--required-admins` flags for jflowers, jpower432, and marcusburghardt to apply_peribolos.yml
 
 ## 7. Verification [blocked-by: all prior sections]
 

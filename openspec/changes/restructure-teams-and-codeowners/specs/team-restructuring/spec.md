@@ -72,8 +72,8 @@ The peribolos configuration SHALL update `complytime-approvers` with
 description "Write access to non-code repos for project stakeholders".
 Maintainers SHALL be `jflowers`, `jpower432`, and `marcusburghardt`. Members
 SHALL be `beatrizmcouto` and `hbraswelrh`. The team SHALL have write access to
-`.github`, `community`, `complytime-demos`, and `website`. The team SHALL NOT
-have write access to `complyctl` or `complytime`.
+`community`, `complytime-demos`, and `website`. The team SHALL NOT have write
+access to `complyctl`, `complytime`, or `.github`.
 
 #### Scenario: Team repurposed with updated membership and repos
 
@@ -81,7 +81,8 @@ have write access to `complyctl` or `complytime`.
 - **WHEN** peribolos.yaml is parsed
 - **THEN** the team `complytime-approvers` has maintainers `["jflowers",
   "jpower432", "marcusburghardt"]`, members `["beatrizmcouto", "hbraswelrh"]`,
-  and repos `.github`, `community`, `complytime-demos`, `website` (all write)
+  and repos `community`, `complytime-demos`, `website` (all write)
+- **AND** `.github` is not in the team's repos list
 
 #### Scenario: Previous members removed
 

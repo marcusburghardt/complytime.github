@@ -118,7 +118,6 @@ orgs:
           - beatrizmcouto
           - hbraswelrh
         repos:
-          ".github": write
           community: write
           complytime-demos: write
           website: write

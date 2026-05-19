@@ -16,26 +16,28 @@ https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-f
 - **THEN** `.github/CODEOWNERS` exists with the ownership rules
 - **AND** the root `CODEOWNERS` file is deleted
 
-### Requirement: .github repo CODEOWNERS includes complytime-approvers team
+### Requirement: .github repo CODEOWNERS lists only org admins
 
-The `.github` repository CODEOWNERS SHALL include both individual admin
-users and the `@complytime/complytime-approvers` team as code owners for
-all files. The file at `.github/CODEOWNERS` SHALL contain the line:
+The `.github` repository CODEOWNERS SHALL list only individual org admin
+users as code owners. The `@complytime/complytime-approvers` team SHALL NOT
+be included in CODEOWNERS, despite having write access to the repository.
+The file at `.github/CODEOWNERS` SHALL contain the line:
 
 ```
-* @jflowers @jpower432 @marcusburghardt @complytime/complytime-approvers
+* @jflowers @jpower432 @marcusburghardt
 ```
+
+This separation between write access (via team) and approval authority (via
+CODEOWNERS) prevents privilege escalation. With `require_code_owner_review:
+true` in the repository ruleset, only org admins can approve merges to
+peribolos.yaml and other org management files.
 
 #### Scenario: CODEOWNERS file content validated
 
 - **GIVEN** the `.github/CODEOWNERS` file exists in this repository
 - **WHEN** the file is read
-- **THEN** it contains the line
-  `* @jflowers @jpower432 @marcusburghardt @complytime/complytime-approvers`
-
-Note: GitHub will request review from the individual admins and any member of
-the `complytime-approvers` team when a PR is opened. Approval from any one of
-them satisfies the CODEOWNERS requirement.
+- **THEN** it contains the line `* @jflowers @jpower432 @marcusburghardt`
+- **AND** no team references appear in the file
 
 ### Requirement: complyctl CODEOWNERS cleaned up
 

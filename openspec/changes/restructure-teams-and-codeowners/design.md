@@ -86,12 +86,24 @@ in CODEOWNERS files.
 
 Rather than deleting `complytime-approvers` and creating a new team, repurpose
 it with updated membership and repo access. This team grants write access to
-non-code repositories: `.github`, `community`, `complytime-demos`, and
-`website`. Note that `complytime-dev` does NOT have write access to `.github`;
-only `complytime-approvers` provides write access to that repository.
+non-code repositories: `community`, `complytime-demos`, and `website`.
+
+The `.github` repository is explicitly excluded from this team's repo access.
+Write access to the org management repo would provide no practical benefit
+(contributors can fork to create PRs) while unnecessarily expanding the attack
+surface. Only org admins retain write access to `.github` through their admin
+role.
 
 Membership: jflowers, jpower432, marcusburghardt (maintainers),
 beatrizmcouto, hbraswelrh (members).
+
+### 5a. Peribolos `--required-admins` for admin removal protection
+
+The `apply_peribolos.yml` workflow includes `--required-admins` flags for each
+current org admin (jflowers, jpower432, marcusburghardt). This causes peribolos
+to fail if any of these admins are removed from the `admins:` list in
+peribolos.yaml, providing defense-in-depth against admin removal even if a
+malicious change passes code review.
 
 ### 6. config_test.go validation strategy
 
