@@ -59,6 +59,14 @@ jobs:
         env:
           APP_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
+          # Write the token to a secure temp file. Prow's SecretAgent
+          # re-reads --github-token-path periodically, so a process
+          # substitution FIFO (consumed on first read) causes 401s.
+          TOKEN_FILE=$(mktemp)
+          trap 'rm -f "$TOKEN_FILE"' EXIT
+          install -m 0600 /dev/null "$TOKEN_FILE"
+          printf '%s' "$APP_TOKEN" > "$TOKEN_FILE"
+
           /tmp/peribolos \
             --config-path /tmp/peribolos.yaml \
             --fix-org \
@@ -72,8 +80,9 @@ jobs:
             --required-admins jpower432 \
             --required-admins marcusburghardt \
             --require-self=false \
-            --github-token-path <(printf '%s' "$APP_TOKEN") \
-            2>&1 > /tmp/peribolos-dryrun.log || true
+            --ignore-enterprise-teams \
+            --github-token-path "$TOKEN_FILE" \
+            > /tmp/peribolos-dryrun.log 2>&1 || true
 
           echo "--- Peribolos dry-run output ---"
           jq -r '[.severity, .time, .msg] | join(" | ")' /tmp/peribolos-dryrun.log
