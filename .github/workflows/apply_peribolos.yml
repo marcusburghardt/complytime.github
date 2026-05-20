@@ -80,6 +80,15 @@ jobs:
         run: |
           set -o pipefail
 
+          # Write the token to a secure temp file. Prow's SecretAgent
+          # re-reads --github-token-path periodically, so a process
+          # substitution FIFO (consumed on first read) causes 401s on
+          # subsequent API calls.
+          TOKEN_FILE=$(mktemp)
+          trap 'rm -f "$TOKEN_FILE"' EXIT
+          install -m 0600 /dev/null "$TOKEN_FILE"
+          printf '%s' "$APP_TOKEN" > "$TOKEN_FILE"
+
           PERIBOLOS_ARGS=(
             --config-path /tmp/peribolos.yaml
             --fix-org
@@ -93,6 +102,7 @@ jobs:
             --required-admins jpower432
             --required-admins marcusburghardt
             --require-self=false
+            --ignore-enterprise-teams
           )
 
           if [ "$DRY_RUN" != "true" ]; then
@@ -100,5 +110,5 @@ jobs:
           fi
 
           /tmp/peribolos "${PERIBOLOS_ARGS[@]}" \
-            --github-token-path <(printf '%s' "$APP_TOKEN") \
+            --github-token-path "$TOKEN_FILE" \
             2>&1 | jq -r '[.severity, .time, .msg] | join(" | ")'
