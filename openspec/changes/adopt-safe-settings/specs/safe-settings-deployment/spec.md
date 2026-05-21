@@ -48,68 +48,72 @@ No additional secrets are required (`CLIENT_ID`, `CLIENT_SECRET`, and
 ### Requirement: GitHub Actions sync workflow
 
 A GitHub Actions workflow `safe_settings_sync.yml` SHALL be configured in
-the `.github` repo to run `npm run full-sync`. The workflow SHALL be
-triggered by:
-- `push` to main branch — immediate convergence after config merges
-- `schedule` daily at 06:00 UTC — drift correction (30 min after peribolos
-  sync at 05:30 UTC, ensuring membership/teams are applied before repo
-  settings)
-- `workflow_dispatch` — manual convergence on demand
+the `.github` repo to run `npm run full-sync`. The workflow SHALL initially
+be triggered only by `workflow_dispatch` (manual dispatch) to allow
+controlled rollout and validation. Automated triggers (`push` to main,
+`schedule`) SHALL be added in a follow-up change after initial validation
+is complete.
+
+safe-settings reads its config from the admin repo's default branch via
+the GitHub API. Config changes must be merged to main before the workflow
+can apply them.
+
+The workflow SHALL accept the following inputs on `workflow_dispatch`:
+- `dry-run` — boolean, default `true`. When true, safe-settings runs in
+  NOP mode (logs what would change without applying). Safe by default.
+- `repos` — string, optional. Comma-separated list of repos to target
+  (e.g., `complytime-demos,community`). When empty, applies to all
+  managed repos. When provided, the workflow dynamically generates a
+  scoped `deployment-settings.yml` that restricts safe-settings to only
+  the specified repos.
 
 The workflow SHALL:
 - Check out the `.github` repo (admin repo with config)
-- Check out `github/safe-settings` at a pinned commit SHA (not a mutable tag) to prevent supply chain attacks via tag manipulation. The SHA SHALL be documented in the workflow file.
+- Validate YAML syntax via yamllint before running `full-sync`
+- Check out `github/safe-settings` at a pinned version (TODO: replace
+  with commit SHA after initial validation)
 - Run `npm install` and `npm run full-sync`
 - Pass environment variables: `APP_ID`, `PRIVATE_KEY`, `GH_ORG=complytime`,
-  `ADMIN_REPO=.github`, `CONFIG_PATH=safe-settings`
-- Use `DEPLOYMENT_CONFIG_FILE` pointing to the workspace-relative path of
-  `deployment-settings.yml`
-- Use a concurrency group with `cancel-in-progress: false` to prevent concurrent sync runs from partially applying settings
+  `ADMIN_REPO=.github`, `CONFIG_PATH=safe-settings`, `DEPLOYMENT_CONFIG_FILE`,
+  `FULL_SYNC_NOP`
+- Use a concurrency group with `cancel-in-progress: false` to prevent
+  concurrent sync runs from partially applying settings
 - Set `timeout-minutes` to 15 to prevent runaway execution
-- Include a YAML validation step (yamllint) before running `full-sync` to catch syntax errors before they are applied
 
-The workflow SHALL accept a `dry-run` boolean input on `workflow_dispatch`,
-matching the existing peribolos workflow pattern.
+#### Scenario: Dry-run against a single repo
 
-The workflow SHALL use a concurrency group to prevent concurrent sync runs.
-
-#### Scenario: Push-triggered sync after config merge
-
-- **GIVEN** a PR modifying safe-settings config is merged to main
-- **WHEN** the push event triggers the sync workflow
-- **THEN** safe-settings runs `full-sync` and applies the updated config
-  to all managed repos
-
-#### Scenario: Scheduled drift correction
-
-- **GIVEN** a user modified repo settings via the GitHub UI
-- **WHEN** the daily scheduled sync runs at 06:00 UTC
-- **THEN** safe-settings detects the drift and reverts the settings to match
-  the declared configuration
-
-#### Scenario: Manual convergence via workflow_dispatch
-
-- **GIVEN** a maintainer needs immediate convergence
-- **WHEN** they trigger `workflow_dispatch` on the sync workflow
-- **THEN** safe-settings runs `full-sync` and applies all settings
-
-#### Scenario: Workflow dispatch with dry-run option
-
-- **GIVEN** a maintainer wants to preview what changes would be applied
-- **WHEN** they trigger `workflow_dispatch` with the `dry-run` input set
-  to `true`
-- **THEN** the workflow runs in preview mode and logs what would change
+- **GIVEN** a maintainer wants to preview changes for `complytime-demos`
+- **WHEN** they trigger `workflow_dispatch` with `dry-run=true` and
+  `repos=complytime-demos`
+- **THEN** the workflow generates a scoped deployment-settings that
+  restricts safe-settings to only `complytime-demos`
+- **AND** safe-settings runs in NOP mode and logs what would change
 - **AND** no actual settings are applied
+
+#### Scenario: Apply to a single repo
+
+- **GIVEN** a maintainer has verified the dry-run output is correct
+- **WHEN** they trigger `workflow_dispatch` with `dry-run=false` and
+  `repos=complytime-demos`
+- **THEN** safe-settings applies settings only to `complytime-demos`
+- **AND** other managed repos are not affected
+
+#### Scenario: Apply to all managed repos
+
+- **GIVEN** config changes have been merged to main
+- **WHEN** a maintainer triggers `workflow_dispatch` with `dry-run=false`
+  and `repos` left empty
+- **THEN** safe-settings runs `full-sync` and applies settings to all
+  managed repos
 
 #### Scenario: Sync workflow failure
 
 - **GIVEN** the safe-settings sync workflow encounters an error (e.g.,
   credential expiry, GitHub API outage, invalid YAML)
 - **WHEN** the workflow fails
-- **THEN** the workflow logs include structured error output
-- **AND** no partial settings are applied to some repos while others
-  are skipped (safe-settings processes each repo independently, so
-  partial application is possible — document this behavior)
+- **THEN** the workflow logs include error output
+- **AND** safe-settings processes each repo independently, so partial
+  application is possible — this behavior is documented in MAINTAINING.md
 
 ### Requirement: Config directory in .github repo
 

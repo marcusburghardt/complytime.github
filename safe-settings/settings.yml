@@ -68,7 +68,7 @@ rulesets:
   # Ruleset for code repositories — strict branch protection.
   # Baseline derived from the complyctl and org-infra rulesets, which
   # are the most mature in the org.
-  - name: code-repos-default-branch
+  - name: "safe-settings: code repos"
     target: branch
     enforcement: active
 
@@ -132,7 +132,7 @@ rulesets:
   # Ruleset for non-code repositories — lighter protection.
   # Baseline derived from community, complytime-demos, and website
   # rulesets.
-  - name: non-code-repos-default-branch
+  - name: "safe-settings: non-code repos"
     target: branch
     enforcement: active
 

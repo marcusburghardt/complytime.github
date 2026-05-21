@@ -65,23 +65,32 @@ can only affect that app's scope. Each app gets only the permissions it needs
 give the safe-settings workflow access to org admin permissions it does not need,
 and a single key compromise would affect both org membership and repo settings.
 
-### 2. GitHub Actions-only deployment
+### 2. GitHub Actions deployment — manual dispatch first
 
-Deploy safe-settings via a GitHub Actions workflow that runs `npm run full-sync`
-on three triggers:
-- `push` to main — immediate convergence after config changes are merged
-- `schedule` daily at 06:00 UTC — drift correction (30 min after peribolos
-  sync at 05:30 UTC, ensuring membership/teams are applied before repo settings)
-- `workflow_dispatch` — manual convergence on demand
+Deploy safe-settings via a GitHub Actions workflow that runs `npm run full-sync`.
+Initial rollout uses only `workflow_dispatch` (manual dispatch) for full
+control during validation. Automated triggers are added after confidence is
+established:
+
+**Initial (this change):**
+- `workflow_dispatch` only — manual dispatch with `dry-run` (default true)
+  and `repos` (optional, comma-separated) inputs
+
+**Future (separate change, after validation):**
+- `push` to main on `safe-settings/**` path changes — convergence after merge
+- `schedule` daily at 06:00 UTC — drift correction
 
 No webhook listener, no hosting infrastructure, no public endpoint.
 
+safe-settings reads config from the admin repo's default branch via the
+GitHub API. Config must be merged to main before the workflow can apply it.
+The `repos` input allows targeting specific repos for incremental rollout.
+
 **Rationale:** The complytime org has ~12 repos, 3 admins, and ~24 members.
-This is a small org where eventual consistency (daily sync) is acceptable.
-The `push`-triggered sync provides near-immediate convergence after config
-merges. This model matches the existing peribolos operational pattern
-(scheduled + push + manual dispatch), requires zero infrastructure, and
-eliminates the attack surface of a public webhook endpoint.
+Manual dispatch during initial rollout gives admins full control over when
+and what is applied. The `repos` input enables incremental validation
+(dry-run one repo, apply one repo, then expand). Automated triggers are
+added only after the config is validated against all repos.
 
 **Alternative considered:** Webhook-driven deployment (Docker/Lambda) for
 real-time drift prevention and PR dry-run validation. Rejected because it
@@ -235,13 +244,13 @@ project overview and prerequisites.
 
 ## Risks / Trade-offs
 
-**[Eventual consistency]** The GHA-only deployment provides daily convergence,
-not real-time enforcement. Manual UI changes to repo settings persist until
-the next scheduled sync or a manual `workflow_dispatch` trigger.
--> Mitigation: The `push` trigger on main provides near-immediate convergence
-after config merges. Daily scheduled sync catches drift from manual UI changes.
-Acceptable for a small org (~12 repos) where admins are disciplined about
-config-as-code workflows.
+**[Manual dispatch during initial rollout]** The workflow only runs on manual
+dispatch during initial rollout. There is no automated convergence until
+`push` and `schedule` triggers are added in a follow-up change.
+-> Mitigation: After validating safe-settings against all repos via
+`workflow_dispatch`, automated triggers are added. The `repos` input allows
+incremental rollout (one repo at a time). Acceptable for a small org
+(~12 repos) where admins are disciplined about config-as-code workflows.
 
 **[Two tools for org management]** Maintaining peribolos AND safe-settings
 increases operational complexity. Two config schemas, two deployment pipelines,

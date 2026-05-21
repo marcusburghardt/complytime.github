@@ -1,3 +1,6 @@
+# Ensure Go automatically downloads the toolchain version required by go.mod.
+export GOTOOLCHAIN := auto
+
 ##@ Testing
 
 test-unit: ## run unit tests with coverage
@@ -12,8 +15,9 @@ vet: ## run go vet
 	go vet ./...
 .PHONY: vet
 
-lint: ## run yamllint on peribolos.yaml
+lint: ## run yamllint on peribolos.yaml and safe-settings config
 	yamllint peribolos.yaml
+	yamllint safe-settings/
 .PHONY: lint
 
 sanity: vendor format vet lint ## ensure code is ready for commit
@@ -93,6 +97,12 @@ peribolos-apply: ensure-peribolos ## apply peribolos config to the live org (DES
 		--github-token-path $(PERIBOLOS_TOKEN_PATH) \
 		2>&1 | jq -r '[.severity, .time, .msg] | join(" | ")'
 .PHONY: peribolos-apply
+
+##@ Safe-settings (local validation)
+
+safe-settings-validate: ## validate safe-settings YAML syntax
+	yamllint safe-settings/
+.PHONY: safe-settings-validate
 
 ##@ CRAP Load Monitoring
 

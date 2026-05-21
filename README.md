@@ -1,9 +1,18 @@
-This repository will apply peribolos to manage organization complytime.
+This repository manages the complytime GitHub organization using two
+complementary tools:
+
+- **[Peribolos](https://docs.prow.k8s.io/docs/components/cli-tools/peribolos/)**
+  — org membership, teams, and team-repo permissions (`peribolos.yaml`)
+- **[safe-settings](https://github.com/github/safe-settings)** — repository
+  settings, branch protection, rulesets, and security config (`safe-settings/`)
+
+For maintainer workflows, local testing, and troubleshooting, see
+**[MAINTAINING.md](MAINTAINING.md)**.
 
 To use Peribolos to manage organization, the base requirement is Go setup.
 When running Peribolos, it needs permission to access the organization,
 and repository resources. The Github app installation access token has no
-permission for endpoint user when peribolos updates members of organization. 
+permission for endpoint user when peribolos updates members of organization.
 The Github app user access token could help. A user access token only has
 permissions that both the user and the app have. For more details, please see
 [Generating a user access token for a GitHub App](https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/generating-a-user-access-token-for-a-github-app).

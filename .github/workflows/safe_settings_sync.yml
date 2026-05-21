@@ -1,0 +1,132 @@
+# Workflow to apply safe-settings org configuration.
+# Manual dispatch only — add push/schedule triggers after initial validation.
+# Uses a dedicated safe-settings-bot GitHub App for authentication.
+#
+# safe-settings reads config from the admin repo's default branch (main).
+# Config must be merged to main before this workflow can apply it.
+#
+# See MAINTAINING.md for operational documentation.
+name: Safe Settings Sync
+
+"on":
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: 'Preview changes without applying (NOP mode)'
+        required: false
+        type: boolean
+        default: true
+      repos:
+        description: >-
+          Comma-separated list of repos to target (e.g. "complytime-demos").
+          Leave empty to apply to all managed repos.
+        required: false
+        type: string
+        default: ''
+
+concurrency:
+  group: safe-settings-sync
+  cancel-in-progress: false
+
+env:
+  # Pin to a specific release tag. Update via a deliberate PR.
+  # TODO: Replace with a commit SHA after initial validation.
+  SAFE_SETTINGS_VERSION: "2.1.17"
+  SAFE_SETTINGS_CODE_DIR: ".safe-settings-code"
+
+jobs:
+  sync:
+    if: github.repository_owner == 'complytime'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout complytime/.github repo
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+
+      - name: Validate safe-settings YAML syntax
+        run: yamllint safe-settings/
+
+      - name: Generate scoped deployment-settings
+        if: inputs.repos != ''
+        env:
+          TARGET_REPOS: ${{ inputs.repos }}
+        run: |
+          echo "Scoping safe-settings to repos: $TARGET_REPOS"
+
+          # Read all repo names from peribolos.yaml
+          ALL_REPOS=$(yq -r '.orgs[].repos | keys[]' peribolos.yaml)
+
+          # Build the exclude list: all repos EXCEPT the target ones
+          EXCLUDE_LIST=""
+          for repo in $ALL_REPOS; do
+            SKIP=false
+            IFS=',' read -ra TARGETS <<< "$TARGET_REPOS"
+            for target in "${TARGETS[@]}"; do
+              target=$(echo "$target" | xargs)  # trim whitespace
+              if [ "$repo" = "$target" ]; then
+                SKIP=true
+                break
+              fi
+            done
+            if [ "$SKIP" = "false" ]; then
+              EXCLUDE_LIST="${EXCLUDE_LIST}    - ${repo}"$'\n'
+            fi
+          done
+
+          # Always exclude the admin repo
+          EXCLUDE_LIST="${EXCLUDE_LIST}    - .github"$'\n'
+          EXCLUDE_LIST="${EXCLUDE_LIST}    - admin"$'\n'
+          EXCLUDE_LIST="${EXCLUDE_LIST}    - safe-settings"$'\n'
+
+          # Write scoped deployment-settings.yml (preserving validators
+          # from the original file)
+          {
+            echo "# Auto-generated: scoped to repos: $TARGET_REPOS"
+            echo "restrictedRepos:"
+            echo "  exclude:"
+            echo -n "$EXCLUDE_LIST"
+            # Append validators from original file
+            echo ""
+            yq -r 'del(.restrictedRepos) | select(. != null)' \
+              safe-settings/deployment-settings.yml
+          } > /tmp/scoped-deployment-settings.yml
+
+          echo "--- Generated deployment-settings.yml ---"
+          cat /tmp/scoped-deployment-settings.yml
+
+      - name: Checkout safe-settings code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          repository: github/safe-settings
+          ref: ${{ env.SAFE_SETTINGS_VERSION }}
+          path: ${{ env.SAFE_SETTINGS_CODE_DIR }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642195f572a2b2b9a5e172c  # v4.4.0
+        with:
+          node-version: '20'
+
+      - name: Install safe-settings dependencies
+        working-directory: ${{ env.SAFE_SETTINGS_CODE_DIR }}
+        run: npm install
+
+      - name: Run safe-settings sync
+        working-directory: ${{ env.SAFE_SETTINGS_CODE_DIR }}
+        env:
+          APP_ID: ${{ vars.SAFE_SETTINGS_APP_ID }}
+          PRIVATE_KEY: ${{ secrets.SAFE_SETTINGS_PRIVATE_KEY }}
+          GH_ORG: complytime
+          ADMIN_REPO: .github
+          CONFIG_PATH: safe-settings
+          DEPLOYMENT_CONFIG_FILE: >-
+            ${{ inputs.repos != '' && '/tmp/scoped-deployment-settings.yml'
+            || format('{0}/safe-settings/deployment-settings.yml', github.workspace) }}
+          FULL_SYNC_NOP: ${{ inputs.dry-run }}
+          LOG_LEVEL: ${{ inputs.dry-run && 'debug' || 'info' }}
+        run: |
+          if [ "$FULL_SYNC_NOP" = "true" ]; then
+            echo "=== DRY-RUN MODE: Showing what would change ==="
+          fi
+          npm run full-sync

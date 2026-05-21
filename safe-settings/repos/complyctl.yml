@@ -5,7 +5,7 @@
 # This override is applied on top of the code-repos suborg settings,
 # which inherit from org-wide settings.yml.
 
-# Override the org-level code-repos-default-branch ruleset to require
+# Supplement the org-level "safe-settings: code repos" ruleset to require
 # 2 approvers (org baseline is 1). This matches the current
 # general-rules ruleset on complyctl (id=2569356).
 #
@@ -14,7 +14,7 @@
 # ruleset still applies; GitHub evaluates both and the most restrictive
 # rule wins.
 rulesets:
-  - name: complyctl-extra-review
+  - name: "safe-settings: complyctl stricter review"
     target: branch
     enforcement: active
 

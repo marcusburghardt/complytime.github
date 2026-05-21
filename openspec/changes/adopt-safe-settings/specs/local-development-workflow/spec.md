@@ -21,70 +21,11 @@ under `safe-settings/` using `yamllint`. The target SHALL use the same
 - **THEN** yamllint reports no errors
 - **AND** the command exits with status 0
 
-### Requirement: Local dry-run for safe-settings
-
-A Makefile target `safe-settings-dryrun` SHALL run safe-settings in dry-run
-mode against the live GitHub org. This target SHALL:
-- Depend on `ensure-safe-settings` (clone and install if not present)
-- Use the Probot-native auth pattern (`APP_ID` + `PRIVATE_KEY` env vars)
-- Read credentials from a local file (e.g.,
-  `~/.config/safe-settings/env`) or expect them as environment variables
-- Run safe-settings in dry-run mode. The exact dry-run mechanism SHALL be
-  determined during implementation by consulting the safe-settings
-  documentation (e.g., `--dry-run` flag, `LOG_LEVEL=debug` for
-  preview-only output, or equivalent).
-- Display what changes would be applied without actually applying them
-
-#### Scenario: Dry-run shows pending changes
-
-- **GIVEN** the local safe-settings config differs from the live GitHub state
-- **WHEN** `make safe-settings-dryrun` is run with valid credentials
-- **THEN** the output shows what settings would be changed on which repos
-- **AND** no actual changes are applied to the GitHub org
-
-### Requirement: Ensure safe-settings binary/environment
-
-A Makefile target `ensure-safe-settings` SHALL clone the safe-settings
-repository and install its Node.js dependencies if not already present.
-The target SHALL:
-- Clone `github/safe-settings` at a pinned version/tag to a temporary or
-  cached directory
-- Run `npm install` in the cloned directory
-- Be idempotent (skip clone and install if already present)
-- Mirror the pattern used by `ensure-peribolos` for peribolos
-
-#### Scenario: First run clones and installs
-
-- **GIVEN** safe-settings has not been cloned locally
-- **WHEN** `make ensure-safe-settings` is run
-- **THEN** the safe-settings repo is cloned at the pinned version
-- **AND** `npm install` completes successfully
-
-#### Scenario: Subsequent runs are no-ops
-
-- **GIVEN** safe-settings is already cloned and installed
-- **WHEN** `make ensure-safe-settings` is run
-- **THEN** the target prints a message indicating it is already present
-- **AND** does not re-clone or re-install
-
-### Requirement: Node.js version validation
-
-The `ensure-safe-settings` target SHALL validate that the local Node.js
-version meets the minimum requirement (>= 18). If the version is below
-the minimum, the target SHALL print an error and exit.
-
-#### Scenario: Node.js version too old
-
-- **GIVEN** the local Node.js version is 16
-- **WHEN** `make ensure-safe-settings` is run
-- **THEN** the target prints an error about the minimum version requirement
-- **AND** exits with a non-zero status
-
 ### Requirement: Lint target covers safe-settings YAML
 
-The existing `make lint` target SHALL be extended (or a new combined target
-created) to validate both `peribolos.yaml` and `safe-settings/**/*.yml`
-files. This ensures all org management YAML is linted consistently.
+The existing `make lint` target SHALL be extended to validate both
+`peribolos.yaml` and `safe-settings/**/*.yml` files. This ensures all
+org management YAML is linted consistently.
 
 #### Scenario: Lint catches error in safe-settings file
 
@@ -92,3 +33,31 @@ files. This ensures all org management YAML is linted consistently.
 - **WHEN** `make lint` is run
 - **THEN** yamllint reports the error
 - **AND** the command exits with a non-zero status
+
+### Requirement: Boundary tests validate config locally
+
+The Go tests in `config/boundary_test.go` SHALL be runnable locally
+via `make test-unit` without any credentials or network access. These
+tests parse the local YAML files and validate cross-tool consistency.
+
+#### Scenario: Local boundary validation
+
+- **GIVEN** a developer modifies safe-settings config
+- **WHEN** they run `make test-unit`
+- **THEN** boundary tests validate the config against peribolos.yaml
+- **AND** report any violations (field overlap, missing repos, duplicates)
+- **AND** no GitHub API calls or credentials are required
+
+### Requirement: Full local validation via make sanity
+
+The `make sanity` target SHALL include safe-settings YAML validation
+as part of its checks (via the extended `make lint` target). Running
+`make sanity` SHALL validate both peribolos and safe-settings configs.
+
+#### Scenario: Sanity check covers safe-settings
+
+- **GIVEN** a developer wants to verify all configs before committing
+- **WHEN** they run `make sanity`
+- **THEN** peribolos.yaml and safe-settings YAML are validated
+- **AND** boundary tests are run
+- **AND** the command exits with zero status if everything is correct
