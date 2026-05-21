@@ -1,0 +1,169 @@
+# Organization-wide repository settings for the complytime GitHub org.
+# Applied to all managed repos. Suborg and repo-level overrides can
+# extend but not weaken these defaults (enforced by override validators).
+#
+# IMPORTANT: This file must NOT set fields owned by peribolos:
+#   description, has_projects, default_branch
+# See MAINTAINING.md for the full tool boundary.
+#
+# MIGRATION NOTE: Existing repo-level rulesets (created manually via the
+# GitHub UI) use inconsistent names across repos. Safe-settings creates
+# NEW org-level rulesets alongside the existing ones. GitHub evaluates
+# all active rulesets and the most restrictive rule wins, so this is
+# safe. After verifying the org-level rulesets work correctly, the old
+# repo-level rulesets should be deleted manually.
+#
+# Current repo-level rulesets to clean up after migration:
+#   complyctl:                       general-rules (active), verify-1-approver (disabled)
+#   complytime-collector-components: Default Protection (active)
+#   complytime-policies:             general-rules (disabled)
+#   complytime-providers:            branch-protection (active)
+#   org-infra:                       Branch Protection (active)
+#   community:                       Branch Protection (active)
+#   complytime-demos:                Branch Protection (active)
+#   website:                         general-rules (active)
+#
+# Excluded from safe-settings management:
+#   complyscribe:              archived
+#   gemara-content-service:    scheduled for archival
+
+repository:
+  # Allow auto-merge on pull requests when all requirements are met.
+  # Currently enabled on 7 repos; this will enable it on the remaining 4
+  # (complytime, complytime-demos, website, complytime-policies).
+  allow_auto_merge: true
+
+  # Automatically delete head branches after pull requests are merged.
+  # Currently only on complyctl; this enables it org-wide.
+  delete_branch_on_merge: true
+
+  # Merge strategies — all enabled org-wide, matching current state.
+  allow_squash_merge: true
+  allow_merge_commit: true
+  allow_rebase_merge: true
+
+  # Allow the "Update branch" button on PRs.
+  # Currently only on complyctl; this enables it org-wide.
+  allow_update_branch: true
+
+  # Disable wiki org-wide. Documentation lives in dedicated repos.
+  # Currently enabled on all repos; this is an intentional hardening.
+  has_wiki: false
+
+  # Dependabot vulnerability alerts and automated security fixes.
+  # Currently only complyctl and org-infra have dependabot_security_updates
+  # enabled; this enables it org-wide.
+  security:
+    enableVulnerabilityAlerts: true
+    enableAutomatedSecurityFixes: true
+
+# Rulesets applied at the org level.
+# These create GitHub rulesets visible under Settings > Rules > Rulesets.
+#
+# NOTE on required_signatures: Not currently enforced on any repo.
+# Adding it requires all contributors to configure GPG/SSH signing.
+# Omitted from initial config. Add as a follow-up after contributor
+# onboarding.
+rulesets:
+  # Ruleset for code repositories — strict branch protection.
+  # Baseline derived from the complyctl and org-infra rulesets, which
+  # are the most mature in the org.
+  - name: code-repos-default-branch
+    target: branch
+    enforcement: active
+
+    bypass_actors:
+      - actor_id: 1
+        actor_type: OrganizationAdmin
+        bypass_mode: always
+
+    conditions:
+      ref_name:
+        include:
+          - "~DEFAULT_BRANCH"
+        exclude: []
+      repository_name:
+        include:
+          - complyctl
+          - complytime-collector-components
+          - complytime-policies
+          - complytime-providers
+          - org-infra
+        exclude: []
+
+    rules:
+      # Prevent deletion of the default branch.
+      # Currently enforced on all repos that have rulesets.
+      - type: deletion
+
+      # Prevent force pushes to the default branch.
+      # Currently enforced on all repos that have rulesets.
+      - type: non_fast_forward
+
+      # Pull request requirements.
+      # Baseline: 1 approver, dismiss stale reviews, code owner review,
+      # last push approval. This matches the org-infra ruleset.
+      #
+      # complyctl currently requires 2 approvers — preserved via a
+      # repo-level override in repos/complyctl.yml.
+      #
+      # required_review_thread_resolution is false everywhere today.
+      # Kept false to match current state. Can tighten later.
+      - type: pull_request
+        parameters:
+          required_approving_review_count: 1
+          dismiss_stale_reviews_on_push: true
+          require_code_owner_review: true
+          require_last_push_approval: true
+          required_review_thread_resolution: false
+
+      # Preserve any status checks configured outside of safe-settings
+      # (e.g., via individual repo workflow configurations).
+      # Each repo has different CI checks (unit-test, test, test(3.10),
+      # etc.) — EXTERNALLY_DEFINED keeps existing checks untouched.
+      - type: required_status_checks
+        parameters:
+          strict_required_status_checks_policy: true
+          required_status_checks:
+            - context: "{{EXTERNALLY_DEFINED}}"
+
+  # Ruleset for non-code repositories — lighter protection.
+  # Baseline derived from community, complytime-demos, and website
+  # rulesets.
+  - name: non-code-repos-default-branch
+    target: branch
+    enforcement: active
+
+    bypass_actors:
+      - actor_id: 1
+        actor_type: OrganizationAdmin
+        bypass_mode: always
+
+    conditions:
+      ref_name:
+        include:
+          - "~DEFAULT_BRANCH"
+        exclude: []
+      repository_name:
+        include:
+          - community
+          - complytime
+          - complytime-demos
+          - website
+        exclude: []
+
+    rules:
+      # Prevent deletion of the default branch.
+      - type: deletion
+
+      # Prevent force pushes to the default branch.
+      - type: non_fast_forward
+
+      # Pull request requirements — lighter than code repos.
+      # 1 approver, no dismiss stale reviews, no code owner review,
+      # no last push approval. Matches the current complytime-demos
+      # and community baseline.
+      - type: pull_request
+        parameters:
+          required_approving_review_count: 1
+          required_review_thread_resolution: false
