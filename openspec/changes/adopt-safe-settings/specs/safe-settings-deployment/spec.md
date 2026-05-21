@@ -58,12 +58,18 @@ triggered by:
 
 The workflow SHALL:
 - Check out the `.github` repo (admin repo with config)
-- Check out `github/safe-settings` at a pinned version tag
+- Check out `github/safe-settings` at a pinned commit SHA (not a mutable tag) to prevent supply chain attacks via tag manipulation. The SHA SHALL be documented in the workflow file.
 - Run `npm install` and `npm run full-sync`
 - Pass environment variables: `APP_ID`, `PRIVATE_KEY`, `GH_ORG=complytime`,
   `ADMIN_REPO=.github`, `CONFIG_PATH=safe-settings`
 - Use `DEPLOYMENT_CONFIG_FILE` pointing to the workspace-relative path of
   `deployment-settings.yml`
+- Use a concurrency group with `cancel-in-progress: false` to prevent concurrent sync runs from partially applying settings
+- Set `timeout-minutes` to 15 to prevent runaway execution
+- Include a YAML validation step (yamllint) before running `full-sync` to catch syntax errors before they are applied
+
+The workflow SHALL accept a `dry-run` boolean input on `workflow_dispatch`,
+matching the existing peribolos workflow pattern.
 
 The workflow SHALL use a concurrency group to prevent concurrent sync runs.
 
@@ -86,6 +92,24 @@ The workflow SHALL use a concurrency group to prevent concurrent sync runs.
 - **GIVEN** a maintainer needs immediate convergence
 - **WHEN** they trigger `workflow_dispatch` on the sync workflow
 - **THEN** safe-settings runs `full-sync` and applies all settings
+
+#### Scenario: Workflow dispatch with dry-run option
+
+- **GIVEN** a maintainer wants to preview what changes would be applied
+- **WHEN** they trigger `workflow_dispatch` with the `dry-run` input set
+  to `true`
+- **THEN** the workflow runs in preview mode and logs what would change
+- **AND** no actual settings are applied
+
+#### Scenario: Sync workflow failure
+
+- **GIVEN** the safe-settings sync workflow encounters an error (e.g.,
+  credential expiry, GitHub API outage, invalid YAML)
+- **WHEN** the workflow fails
+- **THEN** the workflow logs include structured error output
+- **AND** no partial settings are applied to some repos while others
+  are skipped (safe-settings processes each repo independently, so
+  partial application is possible — document this behavior)
 
 ### Requirement: Config directory in .github repo
 

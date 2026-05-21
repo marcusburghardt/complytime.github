@@ -7,13 +7,13 @@ default branch of all code repositories. The ruleset SHALL enforce:
 
 - `type: deletion` — prevent branch deletion
 - `type: non_fast_forward` — prevent force pushes
-- `type: required_signatures` — require signed commits
+- `type: required_signatures` — require signed commits (SHOULD; deferred until contributor GPG/SSH signing onboarding is complete. Omitted from initial deployment.)
 - `type: pull_request` with parameters:
   - `dismiss_stale_reviews_on_push: true`
   - `require_code_owner_review: true`
   - `require_last_push_approval: true`
   - `required_approving_review_count: 1`
-  - `required_review_thread_resolution: true`
+  - `required_review_thread_resolution: false` (matches current org state; can be tightened as a follow-up)
 
 The ruleset SHALL target `~DEFAULT_BRANCH` and SHALL include code repos via
 `repository_name` conditions.

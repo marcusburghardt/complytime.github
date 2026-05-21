@@ -35,7 +35,10 @@ overridevalidators:
     script: |
       const baseCount = baseconfig?.protection?.required_pull_request_reviews?.required_approving_review_count
       const overrideCount = overrideconfig?.protection?.required_pull_request_reviews?.required_approving_review_count
-      if (baseCount && overrideCount) {
+      if (baseCount != null && overrideCount != null) {
         return overrideCount >= baseCount
+      }
+      if (baseCount != null && overrideCount == null) {
+        return false
       }
       return true

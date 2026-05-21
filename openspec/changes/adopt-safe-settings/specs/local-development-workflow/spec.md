@@ -29,7 +29,10 @@ mode against the live GitHub org. This target SHALL:
 - Use the Probot-native auth pattern (`APP_ID` + `PRIVATE_KEY` env vars)
 - Read credentials from a local file (e.g.,
   `~/.config/safe-settings/env`) or expect them as environment variables
-- Run `npm run full-sync` with `NODE_ENV=dry-run` or equivalent
+- Run safe-settings in dry-run mode. The exact dry-run mechanism SHALL be
+  determined during implementation by consulting the safe-settings
+  documentation (e.g., `--dry-run` flag, `LOG_LEVEL=debug` for
+  preview-only output, or equivalent).
 - Display what changes would be applied without actually applying them
 
 #### Scenario: Dry-run shows pending changes
@@ -63,6 +66,19 @@ The target SHALL:
 - **WHEN** `make ensure-safe-settings` is run
 - **THEN** the target prints a message indicating it is already present
 - **AND** does not re-clone or re-install
+
+### Requirement: Node.js version validation
+
+The `ensure-safe-settings` target SHALL validate that the local Node.js
+version meets the minimum requirement (>= 18). If the version is below
+the minimum, the target SHALL print an error and exit.
+
+#### Scenario: Node.js version too old
+
+- **GIVEN** the local Node.js version is 16
+- **WHEN** `make ensure-safe-settings` is run
+- **THEN** the target prints an error about the minimum version requirement
+- **AND** exits with a non-zero status
 
 ### Requirement: Lint target covers safe-settings YAML
 

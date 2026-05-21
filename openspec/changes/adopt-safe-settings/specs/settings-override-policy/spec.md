@@ -27,6 +27,18 @@ granting `admin` permission to collaborators at any config level.
 - **WHEN** a config file grants a collaborator `admin` permission
 - **THEN** safe-settings rejects the config and reports a validation error
 
+### Requirement: Valid overrides that strengthen protections are allowed
+
+Override validators SHALL allow suborg or repo level settings that set
+protections equal to or stricter than the org default.
+
+#### Scenario: Higher approver count is accepted
+
+- **GIVEN** the org-level default is `required_approving_review_count: 1`
+- **AND** an `overridevalidator` for `branches` checks the count
+- **WHEN** a repo-level config sets `required_approving_review_count: 2`
+- **THEN** the override validator allows the setting
+
 ### Requirement: Validators produce clear error messages
 
 All validators (both `configvalidators` and `overridevalidators`) SHALL include

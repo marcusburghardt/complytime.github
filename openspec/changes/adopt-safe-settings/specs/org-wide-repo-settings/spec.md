@@ -67,8 +67,10 @@ is not version-controlled.
 Two suborg configuration files SHALL be defined:
 
 1. `code-repos.yml` — applies to repositories containing source code:
-   complyctl, complytime-providers, complytime-policies, complyscribe,
-   complytime-collector-components, gemara-content-service, org-infra
+   complyctl, complytime-providers, complytime-policies,
+   complytime-collector-components, org-infra
+
+   Excluded: `complyscribe` (archived) and `gemara-content-service` (pending archival).
 
 2. `non-code-repos.yml` — applies to repositories without source code:
    community, complytime-demos, website, complytime
@@ -91,22 +93,6 @@ Each suborg file SHALL use `suborgrepos` to list the repos in that group.
 
 ### Requirement: Safe-settings SHALL NOT manage peribolos-owned fields
 
-Safe-settings config files (settings.yml, suborg files, repo override files)
-SHALL NOT set the following fields, which are owned by peribolos:
-- `description`
-- `has_projects`
-- `default_branch`
-
-These fields are managed via `peribolos.yaml` repo definitions. Setting them
-in safe-settings config would create a flapping conflict where each tool
-reverts the other's changes.
-
-This boundary is enforced by automated Go tests in
-`config/boundary_test.go` (see `tool-boundary-enforcement` spec).
-
-#### Scenario: Safe-settings config sets a peribolos-owned field
-
-- **GIVEN** a safe-settings config file sets `description` under `repository`
-- **WHEN** the boundary validation tests run
-- **THEN** the test fails with an error identifying the field and file
-- **AND** the PR cannot merge until the violation is removed
+Safe-settings config files SHALL NOT set fields owned by peribolos. See
+the `tool-boundary-enforcement` spec for the authoritative field ownership
+list and enforcement details.

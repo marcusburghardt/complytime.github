@@ -112,7 +112,7 @@ safe-settings config files automatically.
 │   │   ├── code-repos.yml             # complyctl, providers, policies, etc.
 │   │   └── non-code-repos.yml         # community, website, demos
 │   └── repos/                         # per-repo overrides (only if needed)
-│       └── .gitkeep
+│       └── complyctl.yml              # complyctl: 2 required approvers
 ├── .github/
 │   ├── CODEOWNERS
 │   └── workflows/
@@ -128,8 +128,9 @@ review workflows. Keeping everything in `.github` simplifies governance.
 
 Define two suborgs to apply different policies:
 - `code-repos`: complyctl, complytime-providers, complytime-policies,
-  complyscribe, complytime-collector-components, gemara-content-service,
-  org-infra — strict branch protection, required reviews, required signatures
+  complytime-collector-components,
+  org-infra — strict branch protection, required reviews (required signatures deferred to follow-up after contributor onboarding).
+  Excluded: `complyscribe` (archived) and `gemara-content-service` (pending archival).
 - `non-code-repos`: community, complytime-demos, website, complytime — lighter
   protection, fewer required checks
 
