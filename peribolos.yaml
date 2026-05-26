@@ -23,11 +23,11 @@ orgs:
       - JenniferPrivette
       - jiprocha
       - jpadmanrh
-      - mraml
       - nladha09
       - phoward-rh
       - ppsomiad
       - rbaratam-psc
+      - rhaml-23
       - rmonk-redhat
       - sonupreetam
       - trevor-vaughan
@@ -170,6 +170,7 @@ orgs:
           - marcusburghardt
         members:
           - fortiz-ai
+          - rhaml-23
         repos:
           complytime-policies: write
       complytime-dev:
