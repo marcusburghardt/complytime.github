@@ -192,7 +192,7 @@ orgs:
         repos:
           community: write
           complyctl: write
-          complyctl: write
+          complypack: write
           complyscribe: write
           complytime: write
           complytime-collector-components: write
