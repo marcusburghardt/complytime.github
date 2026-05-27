@@ -81,6 +81,10 @@ orgs:
         default_branch: main
         description: The ComplyTime website
         has_projects: true
+      "complypack":
+        default_branch: main
+        description: Assessment logic packaging for complyctl
+        has_projects: true
     teams:
       security-managers:
         description: Enterprise security manager team
@@ -98,6 +102,7 @@ orgs:
           ".github": triage
           community: triage
           complyctl: triage
+          complypack: triage
           complyscribe: triage
           complytime: triage
           complytime-collector-components: triage
@@ -186,6 +191,7 @@ orgs:
           - trevor-vaughan
         repos:
           community: write
+          complyctl: write
           complyctl: write
           complyscribe: write
           complytime: write
