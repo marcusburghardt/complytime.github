@@ -12,10 +12,10 @@ The app SHALL have the following permissions:
 - Repository Contents: read
 - Repository Checks: write
 - Repository Pull requests: write
-- Organization Administration: read
+- Organization Administration: read and write
 
-The app SHALL NOT have Organization Members, Organization Administration write,
-or any other permissions not listed above.
+The app SHALL NOT have Organization Members or any other permissions not
+listed above.
 
 #### Scenario: App installed with correct permissions
 

@@ -59,7 +59,7 @@ can only affect that app's scope. Each app gets only the permissions it needs
 - Repository: Contents (read) — for reading config files from admin repo
 - Repository: Checks (write) — for PR dry-run validation results
 - Repository: Pull requests (write) — for PR comments with change previews
-- Organization: Administration (read) — for reading org-level rulesets
+- Organization: Administration (read and write) — for managing org-level rulesets
 
 **Alternative considered:** Extend complytime-bot. Rejected because it would
 give the safe-settings workflow access to org admin permissions it does not need,

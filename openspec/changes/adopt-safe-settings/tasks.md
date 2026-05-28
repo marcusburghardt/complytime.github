@@ -1,6 +1,6 @@
 ## Phase 1: GitHub App Setup
 
-- [ ] 1.1 Register a new GitHub App (`safe-settings-bot`) in the complytime org with permissions: Repository Administration (write), Contents (read), Checks (write), Pull requests (write), Organization Administration (read)
+- [ ] 1.1 Register a new GitHub App (`safe-settings-bot`) in the complytime org with permissions: Repository Administration (write), Contents (read), Checks (write), Pull requests (write), Organization Administration (read and write)
 - [ ] 1.2 Install the app on the complytime org, granting access to all repositories
 - [ ] 1.3 Store `SAFE_SETTINGS_APP_ID` as a repository variable and `SAFE_SETTINGS_PRIVATE_KEY` as a repository secret in the `.github` repo (no CLIENT_ID/CLIENT_SECRET needed)
 
