@@ -81,6 +81,7 @@ jobs:
             --required-admins marcusburghardt \
             --require-self=false \
             --ignore-enterprise-teams \
+            --ignore-secret-teams \
             --github-token-path "$TOKEN_FILE" \
             > /tmp/peribolos-dryrun.log 2>&1 || true
 

@@ -103,6 +103,7 @@ jobs:
             --required-admins marcusburghardt
             --require-self=false
             --ignore-enterprise-teams
+            --ignore-secret-teams
           )
 
           if [ "$DRY_RUN" != "true" ]; then
