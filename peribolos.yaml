@@ -35,6 +35,7 @@ orgs:
       - sonupreetam
       - trevor-vaughan
       - vojtapolasek
+      - yvonnedevlinrh
     repos:
       ".github":
         default_branch: main
@@ -141,6 +142,7 @@ orgs:
           - hbraswelrh
           - sonupreetam
           - trevor-vaughan
+          - yvonnedevlinrh
         repos:
           complytime-providers: write
       openscap-provider-approvers:
@@ -155,6 +157,7 @@ orgs:
           - hbraswelrh
           - sonupreetam
           - trevor-vaughan
+          - yvonnedevlinrh
         repos:
           complytime-providers: write
       opa-provider-approvers:
@@ -170,6 +173,7 @@ orgs:
           - hbraswelrh
           - sonupreetam
           - trevor-vaughan
+          - yvonnedevlinrh
         repos:
           complytime-providers: write
       complytime-policies-approvers:
@@ -196,6 +200,7 @@ orgs:
           - hbraswelrh
           - sonupreetam
           - trevor-vaughan
+          - yvonnedevlinrh
         repos:
           community: write
           complyctl: write
