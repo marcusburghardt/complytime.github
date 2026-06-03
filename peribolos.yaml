@@ -17,6 +17,7 @@ orgs:
       - bplaxco
       - dbaker-arch
       - eeasley2014
+      - em-redhat
       - fkolacek-rh
       - fortiz-ai
       - gvauter
@@ -135,6 +136,7 @@ orgs:
           - jpower432
           - marcusburghardt
         members:
+          - em-redhat
           - gvauter
           - hbraswelrh
           - sonupreetam
@@ -148,6 +150,7 @@ orgs:
           - jpower432
           - marcusburghardt
         members:
+          - em-redhat
           - gvauter
           - hbraswelrh
           - sonupreetam
@@ -161,6 +164,7 @@ orgs:
           - jpower432
           - marcusburghardt
         members:
+          - em-redhat
           - fortiz-ai
           - gvauter
           - hbraswelrh
@@ -187,6 +191,7 @@ orgs:
           - jpower432
           - marcusburghardt
         members:
+          - em-redhat
           - gvauter
           - hbraswelrh
           - sonupreetam
