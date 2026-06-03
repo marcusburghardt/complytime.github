@@ -21,6 +21,7 @@ orgs:
       - fkolacek-rh
       - fortiz-ai
       - gvauter
+      - gxmiranda
       - hbraswelrh
       - jamimoor
       - JenniferPrivette
@@ -139,6 +140,7 @@ orgs:
         members:
           - em-redhat
           - gvauter
+          - gxmiranda
           - hbraswelrh
           - sonupreetam
           - trevor-vaughan
@@ -154,6 +156,7 @@ orgs:
         members:
           - em-redhat
           - gvauter
+          - gxmiranda
           - hbraswelrh
           - sonupreetam
           - trevor-vaughan
@@ -170,6 +173,7 @@ orgs:
           - em-redhat
           - fortiz-ai
           - gvauter
+          - gxmiranda
           - hbraswelrh
           - sonupreetam
           - trevor-vaughan
@@ -197,6 +201,7 @@ orgs:
         members:
           - em-redhat
           - gvauter
+          - gxmiranda
           - hbraswelrh
           - sonupreetam
           - trevor-vaughan
