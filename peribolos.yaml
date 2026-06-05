@@ -97,7 +97,7 @@ orgs:
         members:
           - bplaxco
       community-managers:
-        description: Community managers who handle labels, reviews, and issue triage without write access
+        description: Community managers who handle labels, reviews, issue triage, and project coordination
         privacy: closed
         members:
           - beatrizmcouto
@@ -105,18 +105,18 @@ orgs:
           - sonupreetam
         repos:
           ".github": triage
-          community: triage
-          complyctl: triage
-          complypack: triage
-          complyscribe: triage
-          complytime: triage
-          complytime-collector-components: triage
-          complytime-demos: triage
-          complytime-policies: triage
-          complytime-providers: triage
-          gemara-content-service: triage
-          org-infra: triage
-          website: triage
+          community: write
+          complyctl: write
+          complypack: write
+          complyscribe: write
+          complytime: write
+          complytime-collector-components: write
+          complytime-demos: write
+          complytime-policies: write
+          complytime-providers: write
+          gemara-content-service: write
+          org-infra: write
+          website: write
       complytime-approvers:
         description: Write access to non-code repos for project stakeholders
         privacy: closed
