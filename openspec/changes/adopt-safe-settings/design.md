@@ -278,3 +278,16 @@ without boundary enforcement causes flapping.
 `config/boundary_test.go` validate no overlap exists. CI runs these tests on
 every PR as guardrails. `MAINTAINING.md` documents which tool owns which
 fields.
+
+**[GitHub Enterprise hierarchy]** The complytime org is part of a GitHub
+Enterprise Cloud account. Enterprise admins can enforce policies and create
+Enterprise-level rulesets that take precedence over org-level settings.
+-> Mitigation: GitHub rulesets are always additive across levels (enterprise,
+org, repo) — the most restrictive rule wins. safe-settings org-level rulesets
+coexist with Enterprise rulesets without conflict. Repository feature toggles
+managed by safe-settings (has_wiki, allow_auto_merge, merge strategies) have
+no Enterprise-level policy override. If Enterprise enforces a setting that
+contradicts safe-settings config, the API call fails gracefully (logged as an
+error, other settings still applied). Enterprise admins retain full control
+and cannot be locked out. See `MAINTAINING.md` for the full hierarchy
+documentation.

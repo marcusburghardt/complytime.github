@@ -261,6 +261,36 @@ Common causes:
 - **safe-settings version issue**: If safe-settings behavior changes,
   check the pinned version in the workflow file.
 
+## GitHub Enterprise Hierarchy
+
+The complytime org is part of a GitHub Enterprise Cloud account. Enterprise admins can enforce policies and rulesets that layer on top of org-level settings. Understanding this hierarchy is important when managing settings with safe-settings.
+
+### How settings layer
+
+GitHub uses two distinct mechanisms, each with different conflict behavior:
+
+**Rulesets** (branch protection, push rules) are always **additive**. Enterprise, org, and repo-level rulesets all apply simultaneously, and the most restrictive rule wins. There is never a conflict — just aggregation. If Enterprise requires 2 reviewers and safe-settings sets 1 at the org level, the effective result is 2. safe-settings cannot weaken Enterprise rulesets.
+
+**Enterprise Policies** (member privileges, repo governance) operate in either **enforce** mode (org cannot change the setting) or **delegate** mode (org manages freely). When enforced, API calls that contradict them fail (HTTP 422).
+
+### What safe-settings can and cannot affect
+
+| Setting category | Enterprise controls? | safe-settings impact |
+|-----------------|---------------------|---------------------|
+| Rulesets (branch protection, push rules) | Enterprise can add its own rulesets | safe-settings org-level rulesets coexist; most restrictive wins |
+| Repo feature toggles (`has_wiki`, `allow_auto_merge`, merge strategies) | No enterprise-level policy | safe-settings controls freely |
+| Dependabot alerts and security fixes | Enterprise can restrict management | May fail if Enterprise locks security settings |
+| Forking policy | Enterprise can enforce | Not managed by our safe-settings config |
+| Repo visibility | Enterprise can restrict | Not managed by our safe-settings config |
+| Org membership, teams | Enterprise can manage via SCIM/IdP | Managed by peribolos, not safe-settings |
+
+### Key guarantees
+
+- Enterprise admins retain full control. Enterprise-level rulesets and policies always take precedence over org-level settings.
+- safe-settings cannot lock Enterprise admins out or override their policies.
+- If Enterprise adds stricter rulesets in the future, they layer on top of the org-level rulesets managed by safe-settings without requiring changes to the safe-settings config.
+- If safe-settings attempts to set a value that contradicts an enforced Enterprise policy, the API call fails gracefully (logged as an error, other settings still applied).
+
 ## Excluded Repos
 
 The following repos are excluded from safe-settings management:
