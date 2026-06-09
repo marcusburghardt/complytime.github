@@ -53,6 +53,7 @@
 - [ ] 7.1 Create `MAINTAINING.md` at repo root covering: tool boundary table, common workflows (add member, change rulesets, add repo to safe-settings, add override), local validation instructions, workflow_dispatch usage, troubleshooting guide, override validator policies
 - [ ] 7.2 Update `README.md` to link to `MAINTAINING.md` for maintainer documentation
 - [ ] 7.3 Update `.github/CODEOWNERS` to add path-specific rules for `safe-settings/` requiring admin approval
+- [ ] 7.4 Configure code review assignment on `complytime-dev` team via GitHub UI: enable auto assignment, round robin algorithm, 2 reviewers, notify only selected subset (see MAINTAINING.md for details)
 
 ## Phase 8: Enable Automation (future change)
 

@@ -104,6 +104,41 @@ a security floor:
 a validator, discuss with org admins. Exceptions require modifying the
 validator script in `deployment-settings.yml` via a reviewed PR.
 
+## Code Review Assignment
+
+GitHub Teams support automatic code review assignment, which selects a
+subset of team members for each PR instead of notifying the entire team.
+This works with CODEOWNERS — the team stays in CODEOWNERS but only the
+selected members get pinged.
+
+This feature is configured manually via the GitHub UI (Team Settings >
+Code review assignment) because neither peribolos nor safe-settings
+supports it. The GitHub REST API does not expose these settings; only
+the GraphQL API v4 does (used by Terraform's `github_team_settings`
+resource, which we do not use).
+
+### Current configuration
+
+| Team | Algorithm | Reviewers | Notify | Status |
+|------|-----------|-----------|--------|--------|
+| `complytime-dev` | Round robin | 2 | Only selected subset | Pending setup |
+
+### How to configure
+
+1. Go to the team settings: github.com/orgs/complytime/teams/`<team>`/settings
+2. Under "Code review assignment", check "Enable auto assignment"
+3. Set the algorithm (round robin recommended for even distribution)
+4. Set the number of reviewers (e.g., 2)
+5. Check "Only notify requested team members" to suppress team-wide pings
+6. Optionally exclude members who should never be auto-assigned
+
+### When to reconfigure
+
+This is a one-time setup that rarely changes. Reconfigure when:
+- Team size changes significantly (adjust reviewer count)
+- A member needs permanent exclusion from review rotation
+- The team wants to switch from round robin to load balance
+
 ## Local Validation
 
 ### Prerequisites
