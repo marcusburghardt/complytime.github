@@ -35,7 +35,8 @@ var peribolosOwnedFields = []string{
 // Peribolos config must NOT set these fields.
 var safeSettingsOwnedFields = []string{
 	"has_wiki",
-	"has_issues",
+	"has_issues", // reserved; not actively managed in initial deployment
+
 	"allow_auto_merge",
 	"delete_branch_on_merge",
 	"allow_squash_merge",
