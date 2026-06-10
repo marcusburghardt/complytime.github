@@ -18,19 +18,20 @@ default branch of all code repositories. The ruleset SHALL enforce:
 The ruleset SHALL target `~DEFAULT_BRANCH` and SHALL include code repos via
 `repository_name` conditions.
 
-Bypass actors SHALL be limited to `OrganizationAdmin` with `bypass_mode: always`.
+The ruleset SHALL NOT define bypass actors. All users, including org
+admins, follow the same rules.
 
 #### Scenario: Code repo default branch protected
 
 - **GIVEN** the org-level ruleset is defined in safe-settings config
 - **WHEN** safe-settings applies the ruleset
-- **THEN** all code repos have the default branch protected with signed
-  commits, required reviews, and no force pushes
+- **THEN** all code repos have the default branch protected with
+  required reviews and no force pushes
 
-#### Scenario: Non-admin cannot bypass rules
+#### Scenario: Admin cannot bypass rules
 
-- **GIVEN** the ruleset bypass_actors only includes OrganizationAdmin
-- **WHEN** a non-admin user attempts to force push to the default branch
+- **GIVEN** the ruleset has no bypass actors
+- **WHEN** an org admin attempts to force push to the default branch
 - **THEN** the push is rejected
 
 ### Requirement: Lighter ruleset for non-code repos

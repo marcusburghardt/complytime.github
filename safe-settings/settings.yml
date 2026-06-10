@@ -72,13 +72,6 @@ rulesets:
     target: branch
     enforcement: active
 
-    bypass_actors:
-      # actor_id 1 is the GitHub-reserved ID for OrganizationAdmin.
-      # See: https://docs.github.com/en/rest/orgs/rules
-      - actor_id: 1
-        actor_type: OrganizationAdmin
-        bypass_mode: always
-
     conditions:
       ref_name:
         include:
@@ -135,13 +128,6 @@ rulesets:
   - name: "safe-settings: non-code repos"
     target: branch
     enforcement: active
-
-    bypass_actors:
-      # actor_id 1 is the GitHub-reserved ID for OrganizationAdmin.
-      # See: https://docs.github.com/en/rest/orgs/rules
-      - actor_id: 1
-        actor_type: OrganizationAdmin
-        bypass_mode: always
 
     conditions:
       ref_name:
