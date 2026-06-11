@@ -23,6 +23,14 @@ name: Safe Settings Sync
         required: false
         type: string
         default: ''
+      version:
+        description: >-
+          safe-settings commit SHA or tag to use.
+          Default is 2.1.18 (last version compatible with Probot v13).
+          See upstream issue github/safe-settings#955 for Probot v14 status.
+        required: false
+        type: string
+        default: '594f3c706de6c4ddafb1a86dfa7468f19337e54f'
 
 permissions:
   contents: none
@@ -32,8 +40,6 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  # Pin to a specific commit SHA. Update via a deliberate PR.
-  SAFE_SETTINGS_VERSION: "3d61f1f44c78ce40ec1e58120250193ebae7787b"  # 2.1.21
   SAFE_SETTINGS_CODE_DIR: ".safe-settings-code"
 
 jobs:
@@ -102,7 +108,7 @@ jobs:
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10  # v6.0.3
         with:
           repository: github/safe-settings
-          ref: ${{ env.SAFE_SETTINGS_VERSION }}
+          ref: ${{ inputs.version }}
           path: ${{ env.SAFE_SETTINGS_CODE_DIR }}
 
       - name: Setup Node.js
