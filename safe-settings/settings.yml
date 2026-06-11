@@ -88,12 +88,14 @@ rulesets:
         exclude: []
 
     rules:
+      # Restrict creation of refs matching the default branch pattern.
+      # Prevents recreating the default branch if deleted.
+      - type: creation
+
       # Prevent deletion of the default branch.
-      # Currently enforced on all repos that have rulesets.
       - type: deletion
 
       # Prevent force pushes to the default branch.
-      # Currently enforced on all repos that have rulesets.
       - type: non_fast_forward
 
       # Pull request requirements.
@@ -148,6 +150,9 @@ rulesets:
         exclude: []
 
     rules:
+      # Restrict creation of refs matching the default branch pattern.
+      - type: creation
+
       # Prevent deletion of the default branch.
       - type: deletion
 
