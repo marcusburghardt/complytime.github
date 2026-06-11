@@ -4,15 +4,26 @@
 # This file is read at runtime via the DEPLOYMENT_CONFIG_FILE env var.
 # See: https://github.com/github/safe-settings
 
-# Repositories excluded from safe-settings management.
-# The .github repo is excluded to avoid circular dependency (it hosts
-# the safe-settings config). Its ruleset is managed manually via the
-# GitHub UI.
+# Repositories managed by safe-settings (allowlist approach).
+# Only repos listed here are managed. All others are ignored,
+# including the .github admin repo (avoids circular dependency)
+# and any repos not onboarded to safe-settings.
+#
+# IMPORTANT: safe-settings uses regex matching for restrictedRepos.
+# Entries must be anchored with ^ and $ for exact matching, otherwise
+# "complytime" would also match "complytime-demos", etc.
 restrictedRepos:
-  exclude:
-    - .github
-    - admin
-    - safe-settings
+  include:
+    - "^complyctl$"
+    - "^community$"
+    - "^complypack$"
+    - "^complytime$"
+    - "^complytime-collector-components$"
+    - "^complytime-demos$"
+    - "^complytime-policies$"
+    - "^complytime-providers$"
+    - "^org-infra$"
+    - "^website$"
 
 # Config validators run against each config entry before applying.
 # Return true to allow, false to reject.

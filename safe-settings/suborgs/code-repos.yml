@@ -11,6 +11,7 @@
 
 suborgrepos:
   - complyctl
+  - complypack
   - complytime-collector-components
   - complytime-policies
   - complytime-providers
