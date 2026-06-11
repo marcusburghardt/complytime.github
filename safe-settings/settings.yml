@@ -80,6 +80,7 @@ rulesets:
       repository_name:
         include:
           - complyctl
+          - complypack
           - complytime-collector-components
           - complytime-policies
           - complytime-providers
