@@ -44,6 +44,40 @@ every PR via CI.
 4. After merge, peribolos applies the change (push-triggered or daily
    at 05:30 UTC).
 
+### Enterprise-Managed Members
+
+Some org members are provisioned by the GitHub Enterprise account via
+IdP/SCIM enterprise teams rather than by peribolos. These users fall
+into two categories:
+
+**Not in any peribolos team** — remove them from `peribolos.yaml`
+entirely. The `--ignore-enterprise-teams` flag (used by both the drift
+and apply workflows) ensures peribolos ignores these users during
+reconciliation. They stay in the org through the enterprise, and
+peribolos neither adds nor removes them.
+
+**Also in a peribolos-managed team** — keep them in `peribolos.yaml`
+(the validation tests require team members to be org members) and add
+their username to the `ENTERPRISE_MEMBERS_IGNORE` env variable in
+`peribolos-drift.yml`. This filters out the expected
+`UpdateOrgMembership` drift that `--ignore-enterprise-teams` causes
+for these users.
+
+To update the ignore list, edit the `ENTERPRISE_MEMBERS_IGNORE` value
+in the "Run peribolos dry-run" step of `peribolos-drift.yml`. The
+format is a comma-separated list of GitHub usernames:
+
+```yaml
+ENTERPRISE_MEMBERS_IGNORE: "user1, user2, user3"
+```
+
+**Why this drift happens:** `--ignore-enterprise-teams` subtracts
+enterprise team members from peribolos' internal "have" set (current
+GitHub state). If a user is also listed in `peribolos.yaml` (the
+"want" set), peribolos sees "want but don't have" and generates an
+`UpdateOrgMembership` mutation. The mutation is harmless (the user is
+already a member) but it triggers a false-positive drift alert.
+
 ### Create a New Team or Change Team Membership
 
 1. Edit `peribolos.yaml` — add/modify the team under the `teams` section.
