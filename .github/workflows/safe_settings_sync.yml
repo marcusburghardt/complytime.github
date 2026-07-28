@@ -27,7 +27,8 @@ name: Safe Settings Sync
         description: >-
           safe-settings commit SHA or tag to use.
           Default is 2.1.18 (last version compatible with Probot v13).
-          See upstream issue github/safe-settings#955 for Probot v14 status.
+          Includes workaround for check_suite bug (#818) in full-sync
+          mode. See TODO(safe-settings-818) in the sync step.
         required: false
         type: string
         default: '594f3c706de6c4ddafb1a86dfa7468f19337e54f'
@@ -127,4 +128,59 @@ jobs:
           if [ "$FULL_SYNC_NOP" = "true" ]; then
             echo "=== DRY-RUN MODE: Showing what would change ==="
           fi
-          npm run full-sync
+          # --- Workaround for upstream check_suite bug ---
+          #
+          # safe-settings v2.1.18 crashes in full-sync mode because
+          # handleResults accesses payload.check_suite which is
+          # undefined outside the webhook flow. The sync itself
+          # completes; only the Check Run reporting fails.
+          #
+          # Upstream issue: github-community-projects/safe-settings#818
+          # Upstream fix:   github-community-projects/safe-settings#1018
+          #
+          # TODO(safe-settings-818): Remove this patched script and
+          # revert to 'npm run full-sync' once upstream PR #1018 is
+          # merged and we pin to the fixed version.
+          #
+          # ---
+          cat > full-sync-patched.js << 'ENDPATCH'
+          const appFn = require('./')
+          const { FULL_SYNC_NOP } = require('./lib/env')
+          const { createProbot } = require('probot')
+
+          async function performFullSync (appFn, nop) {
+            const probot = createProbot()
+            probot.log.info(`Starting full sync with NOP=${nop}`)
+            try {
+              const app = appFn(probot, {})
+              const settings = await app.syncInstallation(nop)
+              if (settings.errors && settings.errors.length > 0) {
+                probot.log.error('Errors occurred during full sync.')
+                process.exit(1)
+              }
+              probot.log.info('Full sync completed successfully.')
+            } catch (error) {
+              // Workaround: github-community-projects/safe-settings#818
+              // In full-sync mode (CLI/GHA), handleResults tries to
+              // access payload.check_run.check_suite which does not
+              // exist outside the webhook flow. The sync completes
+              // and results are logged; only the Check Run reporting
+              // fails. Safe to skip.
+              if (String(error).includes('check_suite')) {
+                probot.log.info(
+                  'check_suite reporting skipped (expected in full-sync mode). ' +
+                  'See: github-community-projects/safe-settings#818'
+                )
+                return
+              }
+              process.stdout.write(`Unexpected error during full sync: ${error}\n`)
+              process.exit(1)
+            }
+          }
+
+          performFullSync(appFn, FULL_SYNC_NOP).catch((error) => {
+            console.error('Fatal error during full sync:', error)
+            process.exit(1)
+          })
+          ENDPATCH
+          node full-sync-patched.js

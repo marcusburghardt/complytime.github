@@ -295,6 +295,22 @@ Common causes:
 - **safe-settings version issue**: If safe-settings behavior changes,
   check the pinned version in the workflow file.
 
+### Known upstream workarounds
+
+The workflow includes a patched `full-sync.js` to work around a bug
+in safe-settings where `handleResults` crashes in full-sync mode
+because `payload.check_suite` is undefined outside the webhook flow
+(the sync itself completes; only the Check Run reporting fails).
+
+- **Upstream issue**:
+  [github-community-projects/safe-settings#818](https://github.com/github-community-projects/safe-settings/issues/818)
+- **Upstream fix PR**:
+  [github-community-projects/safe-settings#1018](https://github.com/github-community-projects/safe-settings/pull/1018)
+- **Search tag**: `TODO(safe-settings-818)` in the workflow file
+
+Once upstream PR #1018 is merged and released, update the pinned
+version and revert the patched script back to `npm run full-sync`.
+
 ## GitHub Enterprise Hierarchy
 
 The complytime org is part of a GitHub Enterprise Cloud account. Enterprise admins can enforce policies and rulesets that layer on top of org-level settings. Understanding this hierarchy is important when managing settings with safe-settings.
