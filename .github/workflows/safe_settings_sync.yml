@@ -63,38 +63,28 @@ jobs:
         run: |
           echo "Scoping safe-settings to repos: $TARGET_REPOS"
 
-          # Read all repo names from peribolos.yaml
-          ALL_REPOS=$(yq -r '.orgs[].repos | keys[]' peribolos.yaml)
-
-          # Build the exclude list: all repos EXCEPT the target ones
-          EXCLUDE_LIST=""
-          for repo in $ALL_REPOS; do
-            SKIP=false
-            IFS=',' read -ra TARGETS <<< "$TARGET_REPOS"
-            for target in "${TARGETS[@]}"; do
-              target=$(echo "$target" | xargs)  # trim whitespace
-              if [ "$repo" = "$target" ]; then
-                SKIP=true
-                break
-              fi
-            done
-            if [ "$SKIP" = "false" ]; then
-              EXCLUDE_LIST="${EXCLUDE_LIST}    - ${repo}"$'\n'
-            fi
+          # Build an include (allowlist) from the target repos.
+          # Uses the same format as deployment-settings.yml: plain names
+          # matched by safe-settings via glob/minimatch (not regex).
+          #
+          # Previous approach used an exclude list built from
+          # peribolos.yaml, which missed repos not in peribolos
+          # (e.g. nunya, roadmap) causing safe-settings to process
+          # repos it should not manage.
+          INCLUDE_LIST=""
+          IFS=',' read -ra TARGETS <<< "$TARGET_REPOS"
+          for target in "${TARGETS[@]}"; do
+            target=$(echo "$target" | xargs)  # trim whitespace
+            INCLUDE_LIST="${INCLUDE_LIST}    - ${target}"$'\n'
           done
-
-          # Always exclude the admin repo
-          EXCLUDE_LIST="${EXCLUDE_LIST}    - .github"$'\n'
-          EXCLUDE_LIST="${EXCLUDE_LIST}    - admin"$'\n'
-          EXCLUDE_LIST="${EXCLUDE_LIST}    - safe-settings"$'\n'
 
           # Write scoped deployment-settings.yml (preserving validators
           # from the original file)
           {
             echo "# Auto-generated: scoped to repos: $TARGET_REPOS"
             echo "restrictedRepos:"
-            echo "  exclude:"
-            echo -n "$EXCLUDE_LIST"
+            echo "  include:"
+            echo -n "$INCLUDE_LIST"
             # Append validators from original file
             echo ""
             yq -r 'del(.restrictedRepos) | select(. != null)' \
