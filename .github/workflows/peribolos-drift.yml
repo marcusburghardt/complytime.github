@@ -106,6 +106,18 @@ jobs:
           # Filter expected enterprise-member drift
           FILTERED_COUNT=0
           if [ -n "$ENTERPRISE_MEMBERS_IGNORE" ]; then
+            # Validate usernames before building grep pattern.
+            # GitHub usernames allow only [a-zA-Z0-9-], so the values
+            # are safe for grep -vE without regex escaping. This guard
+            # fails fast if an invalid value is ever added.
+            for user in $(echo "$ENTERPRISE_MEMBERS_IGNORE" | tr ',' '\n'); do
+              user=$(echo "$user" | xargs)
+              [ -z "$user" ] && continue
+              if ! [[ "$user" =~ ^[a-zA-Z0-9-]+$ ]]; then
+                echo "::error::Invalid username in ENTERPRISE_MEMBERS_IGNORE: '$user'"
+                exit 1
+              fi
+            done
             IGNORE_PATTERN=$(echo "$ENTERPRISE_MEMBERS_IGNORE" | tr ', ' '\n' \
               | sed '/^$/d' | paste -sd'|' -)
             BEFORE=$(wc -l < /tmp/drift-mutations.txt)
