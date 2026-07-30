@@ -166,7 +166,7 @@ jobs:
               // exist outside the webhook flow. The sync completes
               // and results are logged; only the Check Run reporting
               // fails. Safe to skip.
-              if (String(error).includes('check_suite')) {
+              if (String(error).includes("Cannot read properties of undefined (reading 'check_suite')")) {
                 probot.log.info(
                   'check_suite reporting skipped (expected in full-sync mode). ' +
                   'See: github-community-projects/safe-settings#818'
