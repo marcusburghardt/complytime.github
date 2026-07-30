@@ -20,7 +20,6 @@
 #   complytime-providers:            branch-protection (active)
 #   org-infra:                       Branch Protection (active)
 #   community:                       Branch Protection (active)
-#   complytime-demos:                Branch Protection (active)
 #   website:                         general-rules (active)
 #
 # Excluded from safe-settings management:
@@ -160,15 +159,14 @@ rulesets:
       - type: non_fast_forward
 
       # Pull request requirements — lighter than code repos.
-      # 1 approver, no dismiss stale reviews, no code owner review,
-      # no last push approval. Matches the current complytime-demos
-      # and community baseline.
+      # 1 approver, code owner review required, no dismiss stale
+      # reviews, no last push approval.
       # All parameters must be specified — the GitHub API rejects
       # partial pull_request parameter sets with HTTP 422.
       - type: pull_request
         parameters:
           required_approving_review_count: 1
           dismiss_stale_reviews_on_push: false
-          require_code_owner_review: false
+          require_code_owner_review: true
           require_last_push_approval: false
           required_review_thread_resolution: false
