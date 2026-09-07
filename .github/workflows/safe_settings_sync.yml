@@ -28,10 +28,8 @@ name: Safe Settings Sync
         default: ''
       version:
         description: >-
-          safe-settings commit SHA or tag to use.
-          Default is 2.1.18 (last version compatible with Probot v13).
-          Includes workaround for check_suite bug (#818) in full-sync
-          mode. See TODO(safe-settings-818) in the sync step.
+          safe-settings commit SHA or tag. Leave empty to use the
+          default version (see SAFE_SETTINGS_DEFAULT_VERSION env).
         required: false
         type: string
         default: '594f3c706de6c4ddafb1a86dfa7468f19337e54f'
@@ -45,6 +43,12 @@ concurrency:
 
 env:
   SAFE_SETTINGS_CODE_DIR: ".safe-settings-code"
+  # Pinned to v2.1.18 — last version compatible with Probot v13.
+  # Upstream bugs blocking upgrade:
+  #   - github-community-projects/safe-settings#955 (Probot v14 null logger)
+  #   - github-community-projects/safe-settings#818 (check_suite crash)
+  # See TODO(safe-settings-818) in the sync step.
+  SAFE_SETTINGS_DEFAULT_VERSION: "594f3c706de6c4ddafb1a86dfa7468f19337e54f"
 
 jobs:
   sync:
@@ -56,6 +60,8 @@ jobs:
     steps:
       - name: Checkout complytime/.github repo
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Validate safe-settings YAML syntax
         run: yamllint safe-settings/
@@ -102,8 +108,9 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           repository: github/safe-settings
-          ref: ${{ inputs.version }}
+          ref: ${{ inputs.version || env.SAFE_SETTINGS_DEFAULT_VERSION }}
           path: ${{ env.SAFE_SETTINGS_CODE_DIR }}
+          persist-credentials: false
 
       - name: Setup Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020  # v7.0.0
