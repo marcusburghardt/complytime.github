@@ -66,43 +66,21 @@ jobs:
       - name: Validate safe-settings YAML syntax
         run: yamllint safe-settings/
 
-      - name: Generate scoped deployment-settings
-        if: inputs.repos != ''
+      - name: Build repo list
+        id: repos
         env:
-          TARGET_REPOS: ${{ inputs.repos }}
+          INPUT_REPOS: ${{ inputs.repos }}
         run: |
-          echo "Scoping safe-settings to repos: $TARGET_REPOS"
-
-          # Build an include (allowlist) from the target repos.
-          # Uses the same format as deployment-settings.yml: plain names
-          # matched by safe-settings via glob/minimatch (not regex).
-          #
-          # Previous approach used an exclude list built from
-          # peribolos.yaml, which missed repos not in peribolos
-          # (e.g. nunya, roadmap) causing safe-settings to process
-          # repos it should not manage.
-          INCLUDE_LIST=""
-          IFS=',' read -ra TARGETS <<< "$TARGET_REPOS"
-          for target in "${TARGETS[@]}"; do
-            target=$(echo "$target" | xargs)  # trim whitespace
-            INCLUDE_LIST="${INCLUDE_LIST}    - ${target}"$'\n'
-          done
-
-          # Write scoped deployment-settings.yml (preserving validators
-          # from the original file)
-          {
-            echo "# Auto-generated: scoped to repos: $TARGET_REPOS"
-            echo "restrictedRepos:"
-            echo "  include:"
-            echo -n "$INCLUDE_LIST"
-            # Append validators from original file
-            echo ""
-            yq -r 'del(.restrictedRepos) | select(. != null)' \
-              safe-settings/deployment-settings.yml
-          } > /tmp/scoped-deployment-settings.yml
-
-          echo "--- Generated deployment-settings.yml ---"
-          cat /tmp/scoped-deployment-settings.yml
+          if [ -n "$INPUT_REPOS" ]; then
+            # Manual dispatch with explicit repos
+            REPO_LIST=$(echo "$INPUT_REPOS" | tr ',' '\n' | xargs -n1 | tr '\n' ' ')
+          else
+            # Scheduled or unscoped: read from deployment-settings.yml
+            REPO_LIST=$(yq -r '.restrictedRepos.include[]' \
+              safe-settings/deployment-settings.yml | tr '\n' ' ')
+          fi
+          echo "list=$REPO_LIST" >> "$GITHUB_OUTPUT"
+          echo "Repos to sync: $REPO_LIST"
 
       - name: Checkout safe-settings code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
@@ -121,23 +99,9 @@ jobs:
         working-directory: ${{ env.SAFE_SETTINGS_CODE_DIR }}
         run: npm ci
 
-      - name: Run safe-settings sync
+      - name: Prepare patched full-sync script
         working-directory: ${{ env.SAFE_SETTINGS_CODE_DIR }}
-        env:
-          APP_ID: ${{ vars.SAFE_SETTINGS_APP_ID }}
-          PRIVATE_KEY: ${{ secrets.SAFE_SETTINGS_PRIVATE_KEY }}
-          GH_ORG: complytime
-          ADMIN_REPO: .github
-          CONFIG_PATH: safe-settings
-          DEPLOYMENT_CONFIG_FILE: >-
-            ${{ inputs.repos != '' && '/tmp/scoped-deployment-settings.yml'
-            || format('{0}/safe-settings/deployment-settings.yml', github.workspace) }}
-          FULL_SYNC_NOP: ${{ github.event_name == 'schedule' && 'false' || inputs.dry-run }}
-          LOG_LEVEL: ${{ (github.event_name == 'schedule' || !inputs.dry-run) && 'info' || 'debug' }}
         run: |
-          if [ "$FULL_SYNC_NOP" = "true" ]; then
-            echo "=== DRY-RUN MODE: Showing what would change ==="
-          fi
           # --- Workaround for upstream check_suite bug ---
           #
           # safe-settings v2.1.18 crashes in full-sync mode because
@@ -193,4 +157,81 @@ jobs:
             process.exit(1)
           })
           ENDPATCH
-          node full-sync-patched.js
+
+      - name: Run safe-settings sync
+        working-directory: ${{ env.SAFE_SETTINGS_CODE_DIR }}
+        env:
+          APP_ID: ${{ vars.SAFE_SETTINGS_APP_ID }}
+          PRIVATE_KEY: ${{ secrets.SAFE_SETTINGS_PRIVATE_KEY }}
+          GH_ORG: complytime
+          ADMIN_REPO: .github
+          CONFIG_PATH: safe-settings
+          FULL_SYNC_NOP: ${{ github.event_name == 'schedule' && 'false' || inputs.dry-run }}
+          LOG_LEVEL: ${{ (github.event_name == 'schedule' || !inputs.dry-run) && 'info' || 'debug' }}
+          REPO_LIST: ${{ steps.repos.outputs.list }}
+          BASE_DEPLOYMENT_CONFIG: ${{ format('{0}/safe-settings/deployment-settings.yml', github.workspace) }}
+        run: |
+          if [ "$FULL_SYNC_NOP" = "true" ]; then
+            echo "=== DRY-RUN MODE: Showing what would change ==="
+          fi
+
+          # --- Sequential per-repo sync ---
+          #
+          # safe-settings v2.1.18 has a concurrent processing bug where
+          # the repo config object is shared across repos. When multiple
+          # repos are processed in parallel, the 'name' field from the
+          # first repo (alphabetically) contaminates all others, causing
+          # the API to reject updates with "name already exists".
+          #
+          # Workaround: process one repo at a time by generating a
+          # scoped deployment-settings for each repo and running the
+          # sync sequentially. This avoids the shared-object mutation.
+          #
+          # TODO(safe-settings-name-mutation): Remove this sequential
+          # loop and revert to a single 'node full-sync-patched.js'
+          # call once the upstream name mutation bug is fixed.
+          #
+          # ---
+          SUCCEEDED=0
+          FAILED=0
+          FAILED_REPOS=""
+
+          for repo in $REPO_LIST; do
+            echo ""
+            echo "::group::Syncing $repo"
+
+            # Generate scoped deployment-settings for this single repo.
+            # Uses the same format as deployment-settings.yml: plain
+            # names matched by safe-settings via glob/minimatch.
+            {
+              echo "# Auto-generated: scoped to repo: $repo"
+              echo "restrictedRepos:"
+              echo "  include:"
+              echo "    - $repo"
+              echo ""
+              yq -r 'del(.restrictedRepos) | select(. != null)' \
+                "$BASE_DEPLOYMENT_CONFIG"
+            } > /tmp/scoped-deployment-settings.yml
+
+            export DEPLOYMENT_CONFIG_FILE="/tmp/scoped-deployment-settings.yml"
+
+            if node full-sync-patched.js; then
+              echo "::endgroup::"
+              echo "✓ $repo"
+              SUCCEEDED=$((SUCCEEDED + 1))
+            else
+              echo "::endgroup::"
+              echo "::error::Failed to sync $repo"
+              FAILED=$((FAILED + 1))
+              FAILED_REPOS="$FAILED_REPOS $repo"
+            fi
+          done
+
+          echo ""
+          echo "=== Summary ==="
+          echo "Succeeded: $SUCCEEDED"
+          echo "Failed:    $FAILED"
+          if [ "$FAILED" -gt 0 ]; then
+            echo "Failed repos:$FAILED_REPOS"
+            exit 1
+          fi
