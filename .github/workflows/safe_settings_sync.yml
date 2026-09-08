@@ -47,7 +47,8 @@ env:
   # Upstream bugs blocking upgrade:
   #   - github-community-projects/safe-settings#955 (Probot v14 null logger)
   #   - github-community-projects/safe-settings#818 (check_suite crash)
-  # See TODO(safe-settings-818) in the sync step.
+  #   - github-community-projects/safe-settings#901 (repo name mutation)
+  # See TODO tags in the sync step for each workaround.
   SAFE_SETTINGS_DEFAULT_VERSION: "594f3c706de6c4ddafb1a86dfa7468f19337e54f"
 
 jobs:
@@ -187,9 +188,13 @@ jobs:
           # scoped deployment-settings for each repo and running the
           # sync sequentially. This avoids the shared-object mutation.
           #
+          # Upstream issue: github-community-projects/safe-settings#901
+          # Upstream fix:   github-community-projects/safe-settings#943
+          #                 (merged to main-enterprise, not yet released)
+          #
           # TODO(safe-settings-name-mutation): Remove this sequential
           # loop and revert to a single 'node full-sync-patched.js'
-          # call once the upstream name mutation bug is fixed.
+          # call once upstream #901 is fixed in a tagged release.
           #
           # ---
           SUCCEEDED=0

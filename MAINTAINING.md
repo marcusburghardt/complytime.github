@@ -311,19 +311,45 @@ Common causes:
 
 ### Known upstream workarounds
 
-The workflow includes a patched `full-sync.js` to work around a bug
-in safe-settings where `handleResults` crashes in full-sync mode
-because `payload.check_suite` is undefined outside the webhook flow
-(the sync itself completes; only the Check Run reporting fails).
+The workflow includes workarounds for two upstream safe-settings
+bugs. Both are documented inline with TODO tags for removal once
+fixed upstream.
+
+#### 1. check_suite crash in full-sync mode
+
+`handleResults` crashes because `payload.check_suite` is undefined
+outside the webhook flow. The sync itself completes; only the Check
+Run reporting fails. Workaround: a patched `full-sync.js` that
+catches the specific TypeError and treats it as non-fatal.
 
 - **Upstream issue**:
   [github-community-projects/safe-settings#818](https://github.com/github-community-projects/safe-settings/issues/818)
 - **Upstream fix PR**:
   [github-community-projects/safe-settings#1018](https://github.com/github-community-projects/safe-settings/pull/1018)
 - **Search tag**: `TODO(safe-settings-818)` in the workflow file
+- **Remove when**: PR #1018 is merged and released. Update the
+  pinned version and revert to `npm run full-sync`.
 
-Once upstream PR #1018 is merged and released, update the pinned
-version and revert the patched script back to `npm run full-sync`.
+#### 2. Repo name mutation in concurrent processing
+
+When processing multiple repos in parallel, safe-settings shares
+the repo config object across repos via JavaScript reference. The
+`name` field from the first repo (alphabetically) contaminates all
+others, causing PATCH requests to try renaming every repo. The API
+rejects these with HTTP 422 "name already exists". Workaround: the
+workflow processes repos sequentially (one at a time) using scoped
+deployment-settings for each repo.
+
+- **Upstream issue**:
+  [github-community-projects/safe-settings#901](https://github.com/github-community-projects/safe-settings/issues/901)
+- **Upstream fix PR**:
+  [github-community-projects/safe-settings#943](https://github.com/github-community-projects/safe-settings/pull/943)
+  (merged to `main-enterprise`, not yet in a tagged release)
+- **Search tag**: `TODO(safe-settings-name-mutation)` in the
+  workflow file
+- **Remove when**: upstream #901 is fixed in a tagged release.
+  Revert to a single `node full-sync-patched.js` call without the
+  per-repo loop.
 
 ## GitHub Enterprise Hierarchy
 
