@@ -2,11 +2,11 @@
 
 > From Code to Compliance, Intelligently.
 
-ComplyTime is an engineering-first, API-driven framework designed to automate and unify compliance across the modern, cloud-native landscape. For the Cloud Native Developer and DevOps Engineer, it's a solution that simplifies compliance checks, making them an integral part of your workflow rather than an added burden.
+ComplyTime is an engineering-first, API-driven framework designed to automate and unify compliance across the modern, cloud-native landscape. For the Cloud Native Developer and DevOps Engineer, it's a solution that simplifies compliance checks, making them an integral part of your workflow rather than an afterthought.
 
 ## About ComplyTime
 
-ComplyTime bridges the gap between high-level policy and technical implementation, empowering developers and securing your entire product portfolio. We believe that effective compliance automation must be built on a foundation that respects and integrates with your existing workflows.
+ComplyTime bridges the gap between high-level policy and technical implementation, empowering developers and securing your entire product portfolio.
 
 ## Our Philosophy: Engineering-First
 
@@ -18,14 +18,7 @@ We believe that effective compliance automation must be built on a foundation th
 
 ## Project Architecture
 
-ComplyTime is built on a foundation of modern, microservice-based components designed for flexibility and scale.
-
-* **[complyctl](https://github.com/complytime/complyctl)**: A CLI tool providing a consistent compliance foundation for platforms like RHEL.
-* **[complyscribe](https://github.com/complytime/complyscribe)** *(archived)*: Previously used for CaC/OSCAL content transformation.
-* **[complybeacon](https://github.com/complytime/complybeacon)**: A observability toolkit leveraging OpenTelemetry to simplify audit logging and evidence collection in distributed environments like Kubernetes.
-* **[complytime-demos](https://github.com/complytime/complytime-demos)**: A collection of demonstrations and examples for using the ComplyTime framework.
-
-We leverage powerful, targeted open source components to achieve our goals. For instance, we utilize `oscal-sdk-go` and `compliance-to-policy-go`, sub-projects of OSCAL-Compass that align with our engineering-first, multi-standard vision.
+ComplyTime is built on a foundation of modern, interoperable components designed for flexibility and scale. For the full component map and current implementation status, see the **[Architecture](https://github.com/complytime/complytime/blob/main/docs/architecture.md)** document.
 
 ## Community & Contributing
 
@@ -40,15 +33,3 @@ We are committed to the open source community. All the information you need to g
 Our vision is to establish ComplyTime as the definitive framework for modern, automated compliance. Our roadmap includes:
 
 * **Deepening Cloud-Native Integration**: Enhancing our integration with core cloud-native technologies, including StackRox and OpenTelemetry.
-
-<!-- > Find our Frequently Asked Questions (FAQ) [here](./community/FAQ.md) -->
-
-<!-- ## Frequently Asked Questions (FAQ)
-
-**Q: Does ComplyTime use OSCAL?**
-
-A: Yes, but it is not limited to it. ComplyTime is a multi-standard platform. It leverages specific, targeted modules like `compliance-to-policy-go` to process OSCAL artifacts, but its architecture is designed to support a variety of formats, including Gemara, to avoid dependency on a single standard.
-
-**Q: Why the focus on Gemara?**
-
-A: Gemara represents an engineering-first approach to compliance automation, making it a natural fit for cloud-native workflows. Its backing by the OSSF and its role in the strategic OSPS Baseline initiative signal a major shift in the industry. Supporting Gemara allows us to address critical gaps left by document-centric standards and position ComplyTime at the forefront of modern compliance automation. -->
